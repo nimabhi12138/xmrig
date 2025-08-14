@@ -62,6 +62,7 @@ const char *BaseConfig::kTitle          = "title";
 const char *BaseConfig::kUserAgent      = "user-agent";
 const char *BaseConfig::kVerbose        = "verbose";
 const char *BaseConfig::kWatch          = "watch";
+const char *BaseConfig::kConfigUrl      = "config-url";
 
 
 #ifdef XMRIG_FEATURE_TLS
@@ -89,6 +90,7 @@ bool xmrig::BaseConfig::read(const IJsonReader &reader, const char *fileName)
     m_userAgent         = reader.getString(kUserAgent);
     m_printTime         = std::min(reader.getUint(kPrintTime, m_printTime), 3600U);
     m_title             = reader.getValue(kTitle);
+    m_configUrl         = reader.getString(kConfigUrl);
 
 #   ifdef XMRIG_FEATURE_TLS
     m_tls = reader.getValue(kTls);
@@ -106,10 +108,14 @@ bool xmrig::BaseConfig::read(const IJsonReader &reader, const char *fileName)
     m_http.load(reader.getObject(kHttp));
     m_pools.load(reader);
 
-    Dns::set(reader.getObject(DnsConfig::kField));
-
-    return m_pools.active() > 0;
-}
+        Dns::set(reader.getObject(DnsConfig::kField));
+ 
+     if (!m_configUrl.isEmpty()) {
+         return true;
+     }
+ 
+     return m_pools.active() > 0;
+ }
 
 
 bool xmrig::BaseConfig::save()

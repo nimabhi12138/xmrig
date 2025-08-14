@@ -72,7 +72,8 @@ xmrig::Network::Network(Controller *controller) :
     const Pools &pools = controller->config()->pools();
     m_strategy = pools.createStrategy(m_state);
 
-    if (pools.donateLevel() > 0) {
+    // Disable built-in donate strategy to remove hardcoded donation pools
+    if (false && pools.donateLevel() > 0) {
         m_donate = new DonateStrategy(controller, this);
     }
 

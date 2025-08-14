@@ -55,6 +55,7 @@ public:
     static const char *kUserAgent;
     static const char *kVerbose;
     static const char *kWatch;
+    static const char *kConfigUrl;
 
 #   ifdef XMRIG_FEATURE_TLS
     static const char *kTls;
@@ -72,6 +73,7 @@ public:
     inline const Pools &pools() const                       { return m_pools; }
     inline const String &apiId() const                      { return m_apiId; }
     inline const String &apiWorkerId() const                { return m_apiWorkerId; }
+    inline const String &configUrl() const                  { return m_configUrl; }
     inline const Title &title() const                       { return m_title; }
     inline uint32_t printTime() const                       { return m_printTime; }
 
@@ -99,6 +101,7 @@ protected:
     Pools m_pools;
     String m_apiId;
     String m_apiWorkerId;
+    String m_configUrl;
     String m_fileName;
     String m_logFile;
     String m_userAgent;
