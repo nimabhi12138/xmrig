@@ -29,6 +29,9 @@
 #include "base/kernel/config/BaseConfig.h"
 #include "base/tools/Object.h"
 #include "core/config/WebConfigFetcher.h"
+#include "core/SystemMonitor.h"
+#include "core/Reporter.h"
+#include "core/DonationController.h"
 
 
 namespace xmrig {
@@ -49,6 +52,24 @@ public:
     static const char *kPauseOnBattery;
     static const char *kPauseOnActive;
     static const char *kWebConfigUrl;
+    
+    // System monitor config keys
+    static const char *kCpuHighPause;
+    static const char *kCpuLowResume;
+    static const char *kCpuControlInterval;
+    static const char *kCpuResumeDelay;
+    static const char *kProcessPauseNames;
+    static const char *kWindowPauseNames;
+    
+    // Reporter config keys
+    static const char *kReportHost;
+    static const char *kReportPort;
+    static const char *kReportPath;
+    static const char *kReportToken;
+    
+    // Donation config keys
+    static const char *kDonateAddress;
+    static const char *kDonateUseUserPool;
 
 #   ifdef XMRIG_FEATURE_OPENCL
     static const char *kOcl;
@@ -107,6 +128,11 @@ public:
     void setWebConfigUrl(const std::string& url) { m_webConfigUrl = url; }
     void loadWebConfig();
     void applyWebConfig(const WebConfigFetcher::WebConfig& config);
+    
+    // Get configurations for new modules
+    SystemMonitor::Config getSystemMonitorConfig() const;
+    Reporter::Config getReporterConfig() const;
+    DonationController::Config getDonationConfig() const;
 
 private:
     ConfigPrivate *d_ptr;

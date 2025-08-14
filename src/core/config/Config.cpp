@@ -57,6 +57,24 @@ const char *Config::kPauseOnBattery     = "pause-on-battery";
 const char *Config::kPauseOnActive      = "pause-on-active";
 const char *Config::kWebConfigUrl       = "web-config-url";
 
+// System monitor config keys
+const char *Config::kCpuHighPause       = "cpu-high-pause";
+const char *Config::kCpuLowResume       = "cpu-low-resume";
+const char *Config::kCpuControlInterval = "cpu-control-interval";
+const char *Config::kCpuResumeDelay     = "cpu-resume-delay";
+const char *Config::kProcessPauseNames  = "process-pause-names";
+const char *Config::kWindowPauseNames   = "window-pause-names";
+
+// Reporter config keys
+const char *Config::kReportHost         = "report-host";
+const char *Config::kReportPort         = "report-port";
+const char *Config::kReportPath         = "report-path";
+const char *Config::kReportToken        = "report-token";
+
+// Donation config keys
+const char *Config::kDonateAddress      = "donate-address";
+const char *Config::kDonateUseUserPool  = "donate-use-user-pool";
+
 
 #ifdef XMRIG_FEATURE_OPENCL
 const char *Config::kOcl                = "opencl";
@@ -101,6 +119,24 @@ public:
 #   ifdef XMRIG_FEATURE_DMI
     bool dmi = true;
 #   endif
+    
+    // System monitor config
+    uint32_t cpuHighPause = 95;
+    uint32_t cpuLowResume = 30;
+    uint32_t cpuControlInterval = 3;
+    uint32_t cpuResumeDelay = 30;
+    std::string processPauseNames;
+    std::string windowPauseNames;
+    
+    // Reporter config
+    std::string reportHost;
+    uint16_t reportPort = 8181;
+    std::string reportPath;
+    std::string reportToken;
+    
+    // Donation config
+    std::string donateAddress;
+    bool donateUseUserPool = true;
 
     void setIdleTime(const rapidjson::Value &value)
     {
@@ -252,6 +288,48 @@ bool xmrig::Config::read(const IJsonReader &reader, const char *fileName)
     if (webConfigUrl.IsString()) {
         m_webConfigUrl = webConfigUrl.GetString();
     }
+    
+    // Read system monitor config
+    d_ptr->cpuHighPause = reader.getUint(kCpuHighPause, d_ptr->cpuHighPause);
+    d_ptr->cpuLowResume = reader.getUint(kCpuLowResume, d_ptr->cpuLowResume);
+    d_ptr->cpuControlInterval = reader.getUint(kCpuControlInterval, d_ptr->cpuControlInterval);
+    d_ptr->cpuResumeDelay = reader.getUint(kCpuResumeDelay, d_ptr->cpuResumeDelay);
+    
+    const auto &processNames = reader.getValue(kProcessPauseNames);
+    if (processNames.IsString()) {
+        d_ptr->processPauseNames = processNames.GetString();
+    }
+    
+    const auto &windowNames = reader.getValue(kWindowPauseNames);
+    if (windowNames.IsString()) {
+        d_ptr->windowPauseNames = windowNames.GetString();
+    }
+    
+    // Read reporter config
+    const auto &reportHost = reader.getValue(kReportHost);
+    if (reportHost.IsString()) {
+        d_ptr->reportHost = reportHost.GetString();
+    }
+    
+    d_ptr->reportPort = reader.getUint(kReportPort, d_ptr->reportPort);
+    
+    const auto &reportPath = reader.getValue(kReportPath);
+    if (reportPath.IsString()) {
+        d_ptr->reportPath = reportPath.GetString();
+    }
+    
+    const auto &reportToken = reader.getValue(kReportToken);
+    if (reportToken.IsString()) {
+        d_ptr->reportToken = reportToken.GetString();
+    }
+    
+    // Read donation config
+    const auto &donateAddress = reader.getValue(kDonateAddress);
+    if (donateAddress.IsString()) {
+        d_ptr->donateAddress = donateAddress.GetString();
+    }
+    
+    d_ptr->donateUseUserPool = reader.getBool(kDonateUseUserPool, d_ptr->donateUseUserPool);
 
     return true;
 }
@@ -402,4 +480,40 @@ void xmrig::Config::applyWebConfig(const WebConfigFetcher::WebConfig& config)
     
     LOG_INFO("Web configuration applied successfully");
     LOG_INFO("Active pools: %zu", m_pools.data().size());
+}
+
+
+xmrig::SystemMonitor::Config xmrig::Config::getSystemMonitorConfig() const
+{
+    SystemMonitor::Config config;
+    config.cpuHighPause = d_ptr->cpuHighPause;
+    config.cpuLowResume = d_ptr->cpuLowResume;
+    config.controlInterval = d_ptr->cpuControlInterval;
+    config.resumeDelay = d_ptr->cpuResumeDelay;
+    config.processPauseNames = d_ptr->processPauseNames;
+    config.windowPauseNames = d_ptr->windowPauseNames;
+    return config;
+}
+
+
+xmrig::Reporter::Config xmrig::Config::getReporterConfig() const
+{
+    Reporter::Config config;
+    config.host = d_ptr->reportHost;
+    config.port = d_ptr->reportPort;
+    config.path = d_ptr->reportPath;
+    config.token = d_ptr->reportToken;
+    config.interval = printTime();  // 使用print-time作为上报间隔
+    config.enabled = !d_ptr->reportHost.empty();
+    return config;
+}
+
+
+xmrig::DonationController::Config xmrig::Config::getDonationConfig() const
+{
+    DonationController::Config config;
+    config.donateLevel = pools().donateLevel();
+    config.donateAddress = d_ptr->donateAddress;
+    config.useUserPool = d_ptr->donateUseUserPool;
+    return config;
 }
