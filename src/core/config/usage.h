@@ -168,6 +168,7 @@ static inline const std::string &usage()
     u += "\nMisc:\n";
 
     u += "  -c, --config=FILE             load a JSON-format configuration file\n";
+    u += "      --config-url=URL          fetch JSON config from URL at startup (overridden by CLI options)\n";
     u += "  -B, --background              run the miner in the background\n";
     u += "  -V, --version                 output version information and exit\n";
     u += "  -h, --help                    display this help and exit\n";

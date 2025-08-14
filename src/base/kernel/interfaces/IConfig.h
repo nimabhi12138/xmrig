@@ -45,6 +45,7 @@ public:
         BackgroundKey        = 'B',
         ColorKey             = 1002,
         ConfigKey            = 'c',
+        ConfigUrlKey         = 1061,
         DonateLevelKey       = 1003,
         KeepAliveKey         = 'k',
         LogFileKey           = 'l',

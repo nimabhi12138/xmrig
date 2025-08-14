@@ -126,6 +126,59 @@ private:
 
         ConfigTransform::load(chain, process, transform);
 
+        const char *cfgUrl = chain.getString("config-url", nullptr);
+        if (cfgUrl && cfgUrl[0] != '\0') {
+            // Parse URL into host, port, path, tls
+            bool tls = false;
+            const char *url = cfgUrl;
+            if (strncmp(url, "https://", 8) == 0) {
+                tls = true; url += 8;
+            }
+            else if (strncmp(url, "http://", 7) == 0) {
+                url += 7;
+            }
+
+            const char *slash = strchr(url, '/');
+            std::string hostport = slash ? std::string(url, slash - url) : std::string(url);
+            std::string path = slash ? std::string(slash) : std::string("/");
+
+            std::string host;
+            uint16_t port = tls ? 443 : 80;
+            size_t colonPos = hostport.find(':');
+            if (colonPos == std::string::npos) {
+                host = hostport;
+            } else {
+                host = hostport.substr(0, colonPos);
+                port = static_cast<uint16_t>(strtoul(hostport.substr(colonPos + 1).c_str(), nullptr, 10));
+                if (port == 0) port = tls ? 443 : 80;
+            }
+
+            // Synchronous-ish fetch by running uv loop until response
+            struct LocalListener : public IHttpListener {
+                LocalListener() = default;
+                void onHttpData(const HttpData &data) override {
+                    status = data.status;
+                    if (data.status >= 200 && data.status < 300 && data.isJSON()) {
+                        body = data.body;
+                    }
+                    HttpContext::get(data.id())->close();
+                }
+                int status = 0;
+                std::string body;
+            } listener;
+
+            auto sp = std::shared_ptr<IHttpListener>(&listener, [](IHttpListener*){});
+            FetchRequest req(HTTP_GET, host.c_str(), port, path.c_str(), tls, true);
+            fetch("config-url", std::move(req), sp);
+
+            // Run loop until closed
+            uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+
+            if (!listener.body.empty()) {
+                chain.addRaw(listener.body.c_str());
+            }
+        }
+
         if (read(chain, config)) {
             return config.release();
         }
@@ -145,13 +198,7 @@ private:
             return config.release();
         }
 
-#       ifdef XMRIG_FEATURE_EMBEDDED_CONFIG
-        chain.addRaw(default_config);
-
-        if (read(chain, config)) {
-            return config.release();
-        }
-#       endif
+        // Do not fall back to embedded defaults to avoid built-in pools/donations
 
         return nullptr;
     }
