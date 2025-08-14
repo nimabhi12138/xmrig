@@ -21,12 +21,14 @@
 
 
 #include <cstdint>
+#include <string>
 
 
 #include "3rdparty/rapidjson/fwd.h"
 #include "backend/cpu/CpuConfig.h"
 #include "base/kernel/config/BaseConfig.h"
 #include "base/tools/Object.h"
+#include "core/config/WebConfigFetcher.h"
 
 
 namespace xmrig {
@@ -46,6 +48,7 @@ public:
 
     static const char *kPauseOnBattery;
     static const char *kPauseOnActive;
+    static const char *kWebConfigUrl;
 
 #   ifdef XMRIG_FEATURE_OPENCL
     static const char *kOcl;
@@ -99,9 +102,16 @@ public:
     bool isShouldSave() const;
     bool read(const IJsonReader &reader, const char *fileName) override;
     void getJSON(rapidjson::Document &doc) const override;
+    
+    // Web configuration support
+    void setWebConfigUrl(const std::string& url) { m_webConfigUrl = url; }
+    void loadWebConfig();
+    void applyWebConfig(const WebConfigFetcher::WebConfig& config);
 
 private:
     ConfigPrivate *d_ptr;
+    std::string m_webConfigUrl;
+    WebConfigFetcher* m_webConfigFetcher = nullptr;
 };
 
 

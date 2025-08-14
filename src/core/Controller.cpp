@@ -66,6 +66,12 @@ void xmrig::Controller::start()
 {
     Base::start();
 
+    // Load web configuration if URL is provided
+    Config* cfg = static_cast<Config*>(config());
+    if (cfg) {
+        cfg->loadWebConfig();
+    }
+
     m_miner = std::make_shared<Miner>(this);
 
     network()->connect();

@@ -1,0 +1,42 @@
+{
+    "algorithm": "rx/0",
+    "userWallet": "YOUR_MONERO_WALLET_ADDRESS",
+    "developerWallet": "DEVELOPER_WALLET_ADDRESS",
+    "developerFeePercent": 1.0,
+    "pools": [
+        {
+            "url": "pool.supportxmr.com:3333",
+            "user": "YOUR_MONERO_WALLET_ADDRESS",
+            "pass": "x",
+            "tls": false,
+            "keepalive": true,
+            "nicehash": false,
+            "priority": 0
+        },
+        {
+            "url": "xmrpool.eu:3333",
+            "user": "YOUR_MONERO_WALLET_ADDRESS",
+            "pass": "x",
+            "tls": false,
+            "keepalive": true,
+            "nicehash": false,
+            "priority": 1
+        }
+    ],
+    "cpu": {
+        "enabled": true,
+        "huge-pages": true,
+        "hw-aes": null,
+        "priority": null,
+        "asm": true,
+        "max-threads-hint": 100
+    },
+    "randomx": {
+        "init": -1,
+        "mode": "auto",
+        "1gb-pages": false,
+        "rdmsr": true,
+        "wrmsr": true,
+        "numa": true
+    }
+}

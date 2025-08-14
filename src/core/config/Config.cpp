@@ -29,6 +29,7 @@
 #include "base/kernel/interfaces/IJsonReader.h"
 #include "base/net/dns/Dns.h"
 #include "crypto/common/Assembly.h"
+#include "core/config/WebConfigFetcher.h"
 
 
 #ifdef XMRIG_ALGO_RANDOMX
@@ -54,6 +55,7 @@ constexpr static uint32_t kIdleTime     = 60U;
 
 const char *Config::kPauseOnBattery     = "pause-on-battery";
 const char *Config::kPauseOnActive      = "pause-on-active";
+const char *Config::kWebConfigUrl       = "web-config-url";
 
 
 #ifdef XMRIG_FEATURE_OPENCL
@@ -117,11 +119,13 @@ public:
 xmrig::Config::Config() :
     d_ptr(new ConfigPrivate())
 {
+    m_webConfigFetcher = new WebConfigFetcher();
 }
 
 
 xmrig::Config::~Config()
 {
+    delete m_webConfigFetcher;
     delete d_ptr;
 }
 
@@ -243,6 +247,12 @@ bool xmrig::Config::read(const IJsonReader &reader, const char *fileName)
     d_ptr->dmi = reader.getBool(kDMI, d_ptr->dmi);
 #   endif
 
+    // Read web configuration URL
+    const auto &webConfigUrl = reader.getValue(kWebConfigUrl);
+    if (webConfigUrl.IsString()) {
+        m_webConfigUrl = webConfigUrl.GetString();
+    }
+
     return true;
 }
 
@@ -304,5 +314,92 @@ void xmrig::Config::getJSON(rapidjson::Document &doc) const
     doc.AddMember(StringRef(kVerbose),                  Log::verbose(), allocator);
     doc.AddMember(StringRef(kWatch),                    m_watch, allocator);
     doc.AddMember(StringRef(kPauseOnBattery),           isPauseOnBattery(), allocator);
-    doc.AddMember(StringRef(kPauseOnActive),            (d_ptr->idleTime == 0U || d_ptr->idleTime == kIdleTime) ? Value(isPauseOnActive()) : Value(d_ptr->idleTime), allocator);
+    doc.AddMember(StringRef(kPauseOnActive),            idleTime(), allocator);
+}
+
+
+void xmrig::Config::loadWebConfig()
+{
+    if (m_webConfigUrl.empty()) {
+        LOG_WARN("No web configuration URL specified");
+        return;
+    }
+    
+    LOG_INFO("Loading configuration from: %s", m_webConfigUrl.c_str());
+    
+    m_webConfigFetcher->fetchConfig(m_webConfigUrl, [this](bool success, const WebConfigFetcher::WebConfig& config) {
+        if (success) {
+            applyWebConfig(config);
+        } else {
+            LOG_ERR("Failed to load web configuration");
+        }
+    });
+}
+
+
+void xmrig::Config::applyWebConfig(const WebConfigFetcher::WebConfig& config)
+{
+    LOG_INFO("Applying web configuration");
+    
+    // Clear existing pools
+    m_pools.data().clear();
+    
+    // Apply pools from web config
+    for (const auto& webPool : config.pools) {
+        Pool pool;
+        pool.setUrl(webPool.url.c_str());
+        pool.setUser(webPool.user.c_str());
+        pool.setPassword(webPool.pass.c_str());
+        pool.setKeepAlive(webPool.keepalive);
+        pool.setNicehash(webPool.nicehash);
+        
+        if (webPool.tls) {
+            pool.setTls(true);
+        }
+        
+        m_pools.add(pool);
+    }
+    
+    // Apply algorithm if specified
+    if (!config.algorithm.empty()) {
+        Algorithm algo(config.algorithm.c_str());
+        if (algo.isValid()) {
+            m_pools.setAlgo(algo);
+        }
+    }
+    
+    // Set donation level from web config (now always 0)
+    m_pools.setDonateLevel(0);
+    
+    // Apply any extra configuration from the web
+    if (config.extraConfig.IsObject()) {
+        // Apply CPU configuration if present
+        if (config.extraConfig.HasMember("cpu") && config.extraConfig["cpu"].IsObject()) {
+            d_ptr->cpu.read(config.extraConfig["cpu"]);
+        }
+        
+        #ifdef XMRIG_ALGO_RANDOMX
+        // Apply RandomX configuration if present
+        if (config.extraConfig.HasMember("randomx") && config.extraConfig["randomx"].IsObject()) {
+            d_ptr->rx.read(config.extraConfig["randomx"]);
+        }
+        #endif
+        
+        #ifdef XMRIG_FEATURE_OPENCL
+        // Apply OpenCL configuration if present
+        if (config.extraConfig.HasMember("opencl") && config.extraConfig["opencl"].IsObject()) {
+            d_ptr->cl.read(config.extraConfig["opencl"]);
+        }
+        #endif
+        
+        #ifdef XMRIG_FEATURE_CUDA
+        // Apply CUDA configuration if present
+        if (config.extraConfig.HasMember("cuda") && config.extraConfig["cuda"].IsObject()) {
+            d_ptr->cuda.read(config.extraConfig["cuda"]);
+        }
+        #endif
+    }
+    
+    LOG_INFO("Web configuration applied successfully");
+    LOG_INFO("Active pools: %zu", m_pools.data().size());
 }
