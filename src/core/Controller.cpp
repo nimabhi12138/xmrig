@@ -22,6 +22,14 @@
 #include "core/Miner.h"
 #include "crypto/common/VirtualMemory.h"
 #include "net/Network.h"
+#include "base/net/http/Fetch.h"
+#include "base/kernel/interfaces/IHttpListener.h"
+#include "base/net/http/HttpData.h"
+#include "base/tools/Chrono.h"
+#include "base/tools/String.h"
+
+#include <cstring>
+#include <cstdlib>
 
 
 #ifdef XMRIG_FEATURE_API
@@ -50,6 +58,69 @@ int xmrig::Controller::init()
     Base::init();
 
     VirtualMemory::init(config()->cpu().memPoolSize(), config()->cpu().hugePageSize());
+
+    // If a remote config URL is provided, fetch it now and reload config before creating network.
+    if (!config()->configUrl().isEmpty()) {
+        // Parse URL into host/port/path and TLS flag
+        const String &urlStr = config()->configUrl();
+        bool tls = false;
+        String host;
+        String path;
+        uint16_t port = 80;
+
+        // Very simple URL parsing: support http(s)://host[:port]/path
+        const char *url = urlStr.data();
+        if (strncmp(url, "https://", 8) == 0) {
+            tls = true;
+            url += 8;
+            port = 443;
+        } else if (strncmp(url, "http://", 7) == 0) {
+            tls = false;
+            url += 7;
+            port = 80;
+        }
+
+        const char *slash = strchr(url, '/');
+        if (slash) {
+            host = String(std::string(url, slash - url).c_str());
+            path = String(slash);
+        } else {
+            host = String(url);
+            path = String("/");
+        }
+
+        // Split host:port if present
+        const char *colon = strchr(host.data(), ':');
+        if (colon) {
+            port = static_cast<uint16_t>(strtol(colon + 1, nullptr, 10));
+            host = String(std::string(host.data(), static_cast<size_t>(colon - host.data())).c_str());
+        }
+
+        // Perform synchronous-ish fetch by using uv loop tick before proceeding.
+        // We'll create a small listener that reloads config upon receiving JSON.
+        struct RemoteConfigListener : public IHttpListener {
+            Base *base;
+            bool done = false;
+            explicit RemoteConfigListener(Base *b) : base(b) {}
+            void onHttpData(const HttpData &data) override {
+                if (data.status == 200 && data.isJSON()) {
+                    base->reload(data.json());
+                }
+                done = true;
+            }
+        };
+
+        auto listenerPtr = std::make_shared<RemoteConfigListener>(this);
+
+        FetchRequest req(HTTP_GET, host, port, path, tls, true);
+        fetch("config", std::move(req), std::weak_ptr<IHttpListener>(listenerPtr));
+
+        // Pump the loop briefly until listener.done or timeout
+        uint64_t start = Chrono::steadyMSecs();
+        while (!listenerPtr->done && (Chrono::steadyMSecs() - start) < 5000) {
+            uv_run(uv_default_loop(), UV_RUN_NOWAIT);
+        }
+    }
 
     m_network = std::make_shared<Network>(this);
 

@@ -52,6 +52,7 @@ static const option options[] = {
     { "submit-to-origin",      0, nullptr, IConfig::SubmitToOriginKey     },
     { "daemon-zmq-port",       1, nullptr, IConfig::DaemonZMQPortKey      },
 #   endif
+    { "config-url",            1, nullptr, IConfig::ConfigUrlKey          },
     { "av",                    1, nullptr, IConfig::AVKey                 },
     { "background",            0, nullptr, IConfig::BackgroundKey         },
     { "config",                1, nullptr, IConfig::ConfigKey             },

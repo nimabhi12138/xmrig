@@ -62,6 +62,10 @@ void xmrig::BaseTransform::load(JsonChain &chain, Process *process, IConfigTrans
 
             doc = Document(kObjectType);
         }
+        else if (key == IConfig::ConfigUrlKey) {
+            // Stash the URL string into the doc; the consumer of JsonChain can fetch before reading
+            doc.AddMember(rapidjson::StringRef("config-url"), rapidjson::Value(optarg, doc.GetAllocator()), doc.GetAllocator());
+        }
         else {
             transform.transform(doc, key, optarg);
         }

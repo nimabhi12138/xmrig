@@ -80,6 +80,7 @@ public:
     void load(const IJsonReader &reader);
     void print() const;
     void toJSON(rapidjson::Value &out, rapidjson::Document &doc) const;
+    inline void setData(std::vector<Pool> &&p) { m_data = std::move(p); }
 
 private:
     void setDonateLevel(int level);
