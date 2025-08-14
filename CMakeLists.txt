@@ -58,6 +58,7 @@ set(HEADERS
     src/core/config/Config_platform.h
     src/core/config/Config.h
     src/core/config/ConfigTransform.h
+    src/core/config/RemoteConfig.h
     src/core/config/usage.h
     src/core/Controller.h
     src/core/Miner.h
@@ -108,6 +109,7 @@ set(SOURCES
     src/App.cpp
     src/core/config/Config.cpp
     src/core/config/ConfigTransform.cpp
+    src/core/config/RemoteConfig.cpp
     src/core/Controller.cpp
     src/core/Miner.cpp
     src/core/Taskbar.cpp

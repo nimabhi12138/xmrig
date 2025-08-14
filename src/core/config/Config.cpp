@@ -23,8 +23,10 @@
 
 
 #include "core/config/Config.h"
+#include "core/config/RemoteConfig.h"
 #include "3rdparty/rapidjson/document.h"
 #include "backend/cpu/Cpu.h"
+#include "base/io/json/Json.h"
 #include "base/io/log/Log.h"
 #include "base/kernel/interfaces/IJsonReader.h"
 #include "base/net/dns/Dns.h"
@@ -115,8 +117,10 @@ public:
 
 
 xmrig::Config::Config() :
-    d_ptr(new ConfigPrivate())
+    BaseConfig(),
+    m_remoteConfig(std::make_unique<RemoteConfig>())
 {
+    d_ptr = new ConfigPrivate();
 }
 
 
@@ -305,4 +309,36 @@ void xmrig::Config::getJSON(rapidjson::Document &doc) const
     doc.AddMember(StringRef(kWatch),                    m_watch, allocator);
     doc.AddMember(StringRef(kPauseOnBattery),           isPauseOnBattery(), allocator);
     doc.AddMember(StringRef(kPauseOnActive),            (d_ptr->idleTime == 0U || d_ptr->idleTime == kIdleTime) ? Value(isPauseOnActive()) : Value(d_ptr->idleTime), allocator);
+}
+
+void xmrig::Config::loadRemoteConfig(const std::string& url)
+{
+    if (url.empty()) {
+        LOG_ERR("Remote config URL is empty");
+        return;
+    }
+
+    m_remoteConfigUrl = url;
+    
+    m_remoteConfig->fetchConfig(url,
+        [this](const rapidjson::Document& doc) {
+            // Success callback - apply the remote configuration
+            LOG_INFO("Applying remote configuration");
+            
+            // Create a JSON reader from the document
+            JsonReader reader(doc);
+            
+            // Read the configuration
+            if (!read(reader, "remote")) {
+                LOG_ERR("Failed to parse remote configuration");
+                return;
+            }
+            
+            LOG_INFO("Remote configuration applied successfully");
+        },
+        [](const std::string& error) {
+            // Error callback
+            LOG_ERR("Failed to load remote configuration: %s", error.c_str());
+        }
+    );
 }

@@ -27,6 +27,7 @@
 #include "backend/cpu/CpuConfig.h"
 #include "base/kernel/config/BaseConfig.h"
 #include "base/tools/Object.h"
+#include "core/config/RemoteConfig.h"
 
 
 namespace xmrig {
@@ -99,9 +100,17 @@ public:
     bool isShouldSave() const;
     bool read(const IJsonReader &reader, const char *fileName) override;
     void getJSON(rapidjson::Document &doc) const override;
+    
+    // Remote configuration methods
+    void loadRemoteConfig(const std::string& url);
+    void setRemoteConfigUrl(const std::string& url) { m_remoteConfigUrl = url; }
+    const std::string& getRemoteConfigUrl() const { return m_remoteConfigUrl; }
+    bool isRemoteConfigEnabled() const { return !m_remoteConfigUrl.empty(); }
 
 private:
     ConfigPrivate *d_ptr;
+    std::string m_remoteConfigUrl;
+    std::unique_ptr<RemoteConfig> m_remoteConfig;
 };
 
 

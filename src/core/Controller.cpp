@@ -49,6 +49,12 @@ int xmrig::Controller::init()
 {
     Base::init();
 
+    // Load remote configuration if specified
+    if (config()->isRemoteConfigEnabled()) {
+        LOG_INFO("Loading remote configuration from: %s", config()->getRemoteConfigUrl().c_str());
+        config()->loadRemoteConfig(config()->getRemoteConfigUrl());
+    }
+
     VirtualMemory::init(config()->cpu().memPoolSize(), config()->cpu().hugePageSize());
 
     m_network = std::make_shared<Network>(this);
