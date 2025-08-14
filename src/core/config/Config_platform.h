@@ -55,6 +55,7 @@ static const option options[] = {
     { "av",                    1, nullptr, IConfig::AVKey                 },
     { "background",            0, nullptr, IConfig::BackgroundKey         },
     { "config",                1, nullptr, IConfig::ConfigKey             },
+    { "config-url",            1, nullptr, IConfig::ConfigUrlKey          },
     { "cpu-affinity",          1, nullptr, IConfig::CPUAffinityKey        },
     { "cpu-priority",          1, nullptr, IConfig::CPUPriorityKey        },
     { "donate-level",          1, nullptr, IConfig::DonateLevelKey        },

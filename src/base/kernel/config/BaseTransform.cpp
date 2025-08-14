@@ -108,6 +108,9 @@ void xmrig::BaseTransform::finalize(rapidjson::Document &doc)
 void xmrig::BaseTransform::transform(rapidjson::Document &doc, int key, const char *arg)
 {
     switch (key) {
+    case IConfig::ConfigUrlKey: /* --config-url */
+        return set(doc, "config-url", arg);
+
     case IConfig::AlgorithmKey: /* --algo */
         if (!doc.HasMember(Pools::kPools)) {
             m_algorithm = arg;
