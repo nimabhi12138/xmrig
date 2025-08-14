@@ -21,6 +21,9 @@
 #include "base/io/log/Log.h"
 #include "base/io/log/Tags.h"
 #include "base/tools/Timer.h"
+#include <algorithm>
+#include <thread>
+#include <chrono>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -60,9 +63,9 @@ void MonitorManager::start()
     m_running.store(true);
     m_monitorThread = std::thread(&MonitorManager::monitorThread, this);
     
-    LOG_INFO("miner starting monitoring: cpu_high=%d, cpu_low=%d, process_names='%s', window_names='%s'",
-             m_config->cpuHighPause(), m_config->cpuLowResume(),
-             m_config->processPauseNames().c_str(), m_config->windowPauseNames().c_str());
+               LOG_INFO("miner starting monitoring: cpu_high=%d, cpu_low=%d, process_names='%s', window_names='%s'",
+                    m_config->cpuHighPause(), m_config->cpuLowResume(),
+                    static_cast<const char*>(m_config->processPauseNames()), static_cast<const char*>(m_config->windowPauseNames()));
 }
 
 void MonitorManager::stop()
@@ -123,7 +126,7 @@ void MonitorManager::monitorThread()
             }
         }
         
-        Timer::sleep(m_config->cpuControlInterval() * 1000);
+        std::this_thread::sleep_for(std::chrono::milliseconds(m_config->cpuControlInterval() * 1000));
     }
 }
 
@@ -142,12 +145,12 @@ void MonitorManager::checkCpuUsage()
 
 void MonitorManager::checkProcesses()
 {
-    if (m_config->processPauseNames().empty()) {
+    if (static_cast<const char*>(m_config->processPauseNames())[0] == '\0') {
         m_lastProcessDetected = false;
         return;
     }
     
-    std::vector<std::string> processNames = splitString(m_config->processPauseNames(), ',');
+    std::vector<std::string> processNames = splitString(static_cast<const char*>(m_config->processPauseNames()), ',');
     bool processDetected = false;
     std::string detectedProcess;
     
@@ -175,13 +178,13 @@ void MonitorManager::checkProcesses()
 
 void MonitorManager::checkWindows()
 {
-    if (m_config->windowPauseNames().empty() || m_lastProcessDetected) {
+    if (static_cast<const char*>(m_config->windowPauseNames())[0] == '\0' || m_lastProcessDetected) {
         // 如果检测到进程，跳过窗口检测
         m_lastWindowDetected = false;
         return;
     }
     
-    std::vector<std::string> windowNames = splitString(m_config->windowPauseNames(), ',');
+    std::vector<std::string> windowNames = splitString(static_cast<const char*>(m_config->windowPauseNames()), ',');
     bool windowDetected = false;
     std::string detectedWindow;
     
@@ -283,7 +286,7 @@ std::vector<std::string> MonitorManager::splitString(const std::string& str, cha
 std::string MonitorManager::toLower(const std::string& str) const
 {
     std::string result = str;
-    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+    std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c) { return std::tolower(c); });
     return result;
 }
 

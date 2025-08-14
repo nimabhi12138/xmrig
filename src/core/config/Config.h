@@ -126,19 +126,19 @@ public:
     uint32_t cpuLowResume() const;
     uint32_t cpuControlInterval() const;
     uint32_t cpuResumeDelay() const;
-    const std::string& processPauseNames() const;
-    const std::string& windowPauseNames() const;
-    const std::string& reportHost() const;
+    const xmrig::String& processPauseNames() const;
+    const xmrig::String& windowPauseNames() const;
+    const xmrig::String& reportHost() const;
     uint32_t reportPort() const;
-    const std::string& reportPath() const;
-    const std::string& reportToken() const;
-    const std::string& donateAddress() const;
+    const xmrig::String& reportPath() const;
+    const xmrig::String& reportToken() const;
+    const xmrig::String& donateAddress() const;
     bool donateUseUserPool() const;
 
 private:
     ConfigPrivate *d_ptr;
     std::string m_remoteConfigUrl;
-    std::unique_ptr<RemoteConfig> m_remoteConfig;
+    std::shared_ptr<RemoteConfig> m_remoteConfig;
 };
 
 

@@ -18,17 +18,18 @@
 
 #include "core/config/RemoteConfig.h"
 #include "base/io/log/Log.h"
-#include "base/net/http/HttpClient.h"
+#include "base/net/http/Fetch.h"
 #include "base/net/http/HttpData.h"
 #include "base/tools/Timer.h"
 #include "3rdparty/rapidjson/document.h"
 #include "3rdparty/rapidjson/error/en.h"
+#include <thread>
+#include <chrono>
 
 namespace xmrig {
 
 RemoteConfig::RemoteConfig()
-    : m_client(std::make_unique<HttpClient>(this))
-    , m_retryCount(0)
+    : m_retryCount(0)
     , m_maxRetries(3)
     , m_retryInterval(5000)
     , m_isFetching(false)
@@ -51,7 +52,67 @@ void RemoteConfig::fetchConfig(const std::string& url, ConfigCallback successCal
 
     LOG_INFO("Fetching configuration from: %s", url.c_str());
     
-    m_client->get(url);
+    // Parse URL to extract host, port, and path
+    std::string hostStr;
+    uint16_t port = 80;
+    std::string pathStr = "/";
+    bool tls = false;
+    
+    if (url.substr(0, 8) == "https://") {
+        tls = true;
+        port = 443;
+        size_t hostStart = 8;
+        size_t hostEnd = url.find('/', hostStart);
+        if (hostEnd == std::string::npos) {
+            hostStr = url.substr(hostStart);
+        } else {
+            hostStr = url.substr(hostStart, hostEnd - hostStart);
+            pathStr = url.substr(hostEnd);
+        }
+    } else if (url.substr(0, 7) == "http://") {
+        size_t hostStart = 7;
+        size_t hostEnd = url.find('/', hostStart);
+        if (hostEnd == std::string::npos) {
+            hostStr = url.substr(hostStart);
+        } else {
+            hostStr = url.substr(hostStart, hostEnd - hostStart);
+            pathStr = url.substr(hostEnd);
+        }
+    } else if (url.substr(0, 7) == "file://") {
+        // Handle file:// protocol
+        size_t hostStart = 7;
+        pathStr = url.substr(hostStart);
+        hostStr = "localhost";
+        port = 80;
+    } else {
+        // Assume http if no protocol specified
+        size_t hostEnd = url.find('/');
+        if (hostEnd == std::string::npos) {
+            hostStr = url;
+        } else {
+            hostStr = url.substr(0, hostEnd);
+            pathStr = url.substr(hostEnd);
+        }
+    }
+    
+    // Check for custom port in host
+    size_t portPos = hostStr.find(':');
+    if (portPos != std::string::npos) {
+        try {
+            port = static_cast<uint16_t>(std::stoi(hostStr.substr(portPos + 1)));
+            hostStr = hostStr.substr(0, portPos);
+        } catch (const std::exception& e) {
+            LOG_ERR("Invalid port number in URL: %s", e.what());
+            handleError("Invalid port number in URL");
+            return;
+        }
+    }
+    
+    String host(hostStr.c_str());
+    String path(pathStr.c_str());
+    
+    FetchRequest req(HTTP_GET, host, port, path, tls);
+    fetch("remote_config", std::move(req), std::weak_ptr<IHttpListener>(shared_from_this()));
 }
 
 void RemoteConfig::onHttpData(const HttpData& data)
@@ -79,9 +140,11 @@ void RemoteConfig::retryFetch()
     m_retryCount++;
     LOG_WARN("Retrying configuration fetch (attempt %d/%d)", m_retryCount, m_maxRetries);
 
-    Timer::sleep(m_retryInterval);
-    m_isFetching = true;
-    m_client->get(m_configUrl);
+    // Sleep for retry interval
+    std::this_thread::sleep_for(std::chrono::milliseconds(m_retryInterval));
+    
+    // Re-fetch the configuration
+    fetchConfig(m_configUrl, m_successCallback, m_errorCallback);
 }
 
 void RemoteConfig::handleResponse(const std::string& response)

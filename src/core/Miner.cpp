@@ -385,7 +385,7 @@ public:
     Taskbar m_taskbar;
     
     // 新增监控管理器
-    std::unique_ptr<MonitorManager> monitorManager;
+    std::shared_ptr<MonitorManager> monitorManager;
     bool pausedByMonitor = false;
 };
 
@@ -433,7 +433,7 @@ xmrig::Miner::Miner(Controller *controller)
     d_ptr->rebuild();
     
     // 初始化监控管理器
-    d_ptr->monitorManager = std::make_unique<MonitorManager>(controller->config());
+    d_ptr->monitorManager = std::make_shared<MonitorManager>(controller->config());
     d_ptr->monitorManager->setPauseCallback([this](const std::string& reason) {
         d_ptr->pausedByMonitor = true;
         pause();

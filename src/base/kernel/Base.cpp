@@ -154,7 +154,7 @@ private:
 #       endif
 
         // Check for remote config URL from command line arguments
-        const char* remoteUrl = process->getArg("--remote-config");
+        const char* remoteUrl = process->arguments().value("--remote-config");
         if (remoteUrl && strlen(remoteUrl) > 0) {
             config = std::unique_ptr<Config>(new Config());
             config->setRemoteConfigUrl(remoteUrl);

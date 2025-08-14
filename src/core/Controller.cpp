@@ -22,6 +22,7 @@
 #include "core/Miner.h"
 #include "crypto/common/VirtualMemory.h"
 #include "net/Network.h"
+#include "base/io/log/Log.h"
 
 
 #ifdef XMRIG_FEATURE_API

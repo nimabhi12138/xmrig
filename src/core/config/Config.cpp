@@ -145,10 +145,10 @@ public:
 
 
 xmrig::Config::Config() :
-    BaseConfig(),
-    m_remoteConfig(std::make_unique<RemoteConfig>())
+    BaseConfig()
 {
     d_ptr = new ConfigPrivate();
+    m_remoteConfig = std::make_shared<RemoteConfig>();
 }
 
 
@@ -406,17 +406,17 @@ uint32_t xmrig::Config::cpuResumeDelay() const
     return d_ptr->cpuResumeDelay;
 }
 
-const std::string& xmrig::Config::processPauseNames() const
+const xmrig::String& xmrig::Config::processPauseNames() const
 {
     return d_ptr->processPauseNames;
 }
 
-const std::string& xmrig::Config::windowPauseNames() const
+const xmrig::String& xmrig::Config::windowPauseNames() const
 {
     return d_ptr->windowPauseNames;
 }
 
-const std::string& xmrig::Config::reportHost() const
+const xmrig::String& xmrig::Config::reportHost() const
 {
     return d_ptr->reportHost;
 }
@@ -426,17 +426,17 @@ uint32_t xmrig::Config::reportPort() const
     return d_ptr->reportPort;
 }
 
-const std::string& xmrig::Config::reportPath() const
+const xmrig::String& xmrig::Config::reportPath() const
 {
     return d_ptr->reportPath;
 }
 
-const std::string& xmrig::Config::reportToken() const
+const xmrig::String& xmrig::Config::reportToken() const
 {
     return d_ptr->reportToken;
 }
 
-const std::string& xmrig::Config::donateAddress() const
+const xmrig::String& xmrig::Config::donateAddress() const
 {
     return d_ptr->donateAddress;
 }

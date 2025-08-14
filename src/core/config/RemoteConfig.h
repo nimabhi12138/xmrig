@@ -22,12 +22,12 @@
 #include <string>
 #include <memory>
 #include <functional>
-#include "base/net/http/HttpClient.h"
+#include "base/net/http/HttpListener.h"
 #include "base/kernel/interfaces/IJsonReader.h"
 
 namespace xmrig {
 
-class RemoteConfig : public IHttpListener
+class RemoteConfig : public IHttpListener, public std::enable_shared_from_this<RemoteConfig>
 {
 public:
     using ConfigCallback = std::function<void(const rapidjson::Document&)>;
@@ -48,7 +48,7 @@ private:
     void handleResponse(const std::string& response);
     void handleError(const std::string& error);
 
-    std::unique_ptr<HttpClient> m_client;
+
     std::string m_configUrl;
     ConfigCallback m_successCallback;
     ErrorCallback m_errorCallback;
