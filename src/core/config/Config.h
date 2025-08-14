@@ -64,6 +64,20 @@ public:
     static const char *kDMI;
 #   endif
 
+    // 新增监控配置常量
+    static const char *kCpuHighPause;
+    static const char *kCpuLowResume;
+    static const char *kCpuControlInterval;
+    static const char *kCpuResumeDelay;
+    static const char *kProcessPauseNames;
+    static const char *kWindowPauseNames;
+    static const char *kReportHost;
+    static const char *kReportPort;
+    static const char *kReportPath;
+    static const char *kReportToken;
+    static const char *kDonateAddress;
+    static const char *kDonateUseUserPool;
+
     Config();
     ~Config() override;
 
@@ -106,6 +120,20 @@ public:
     void setRemoteConfigUrl(const std::string& url) { m_remoteConfigUrl = url; }
     const std::string& getRemoteConfigUrl() const { return m_remoteConfigUrl; }
     bool isRemoteConfigEnabled() const { return !m_remoteConfigUrl.empty(); }
+
+    // 新增监控配置方法
+    uint32_t cpuHighPause() const;
+    uint32_t cpuLowResume() const;
+    uint32_t cpuControlInterval() const;
+    uint32_t cpuResumeDelay() const;
+    const std::string& processPauseNames() const;
+    const std::string& windowPauseNames() const;
+    const std::string& reportHost() const;
+    uint32_t reportPort() const;
+    const std::string& reportPath() const;
+    const std::string& reportToken() const;
+    const std::string& donateAddress() const;
+    bool donateUseUserPool() const;
 
 private:
     ConfigPrivate *d_ptr;

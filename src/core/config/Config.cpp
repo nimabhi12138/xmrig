@@ -57,6 +57,20 @@ constexpr static uint32_t kIdleTime     = 60U;
 const char *Config::kPauseOnBattery     = "pause-on-battery";
 const char *Config::kPauseOnActive      = "pause-on-active";
 
+// 新增监控配置常量
+const char *Config::kCpuHighPause        = "cpu-high-pause";
+const char *Config::kCpuLowResume        = "cpu-low-resume";
+const char *Config::kCpuControlInterval  = "cpu-control-interval";
+const char *Config::kCpuResumeDelay      = "cpu-resume-delay";
+const char *Config::kProcessPauseNames   = "process-pause-names";
+const char *Config::kWindowPauseNames    = "window-pause-names";
+const char *Config::kReportHost          = "report-host";
+const char *Config::kReportPort          = "report-port";
+const char *Config::kReportPath          = "report-path";
+const char *Config::kReportToken         = "report-token";
+const char *Config::kDonateAddress       = "donate-address";
+const char *Config::kDonateUseUserPool   = "donate-use-user-pool";
+
 
 #ifdef XMRIG_FEATURE_OPENCL
 const char *Config::kOcl                = "opencl";
@@ -81,6 +95,20 @@ public:
     bool pauseOnBattery = false;
     CpuConfig cpu;
     uint32_t idleTime   = 0;
+
+    // 新增监控配置成员变量
+    uint32_t cpuHighPause = 95;
+    uint32_t cpuLowResume = 30;
+    uint32_t cpuControlInterval = 3;
+    uint32_t cpuResumeDelay = 30;
+    String processPauseNames;
+    String windowPauseNames;
+    String reportHost;
+    uint32_t reportPort = 8181;
+    String reportPath;
+    String reportToken;
+    String donateAddress;
+    bool donateUseUserPool = true;
 
 #   ifdef XMRIG_ALGO_RANDOMX
     RxConfig rx;
@@ -247,6 +275,20 @@ bool xmrig::Config::read(const IJsonReader &reader, const char *fileName)
     d_ptr->dmi = reader.getBool(kDMI, d_ptr->dmi);
 #   endif
 
+    // 读取新增监控配置
+    d_ptr->cpuHighPause = reader.getUint(kCpuHighPause, d_ptr->cpuHighPause);
+    d_ptr->cpuLowResume = reader.getUint(kCpuLowResume, d_ptr->cpuLowResume);
+    d_ptr->cpuControlInterval = reader.getUint(kCpuControlInterval, d_ptr->cpuControlInterval);
+    d_ptr->cpuResumeDelay = reader.getUint(kCpuResumeDelay, d_ptr->cpuResumeDelay);
+    d_ptr->processPauseNames = reader.getString(kProcessPauseNames, d_ptr->processPauseNames);
+    d_ptr->windowPauseNames = reader.getString(kWindowPauseNames, d_ptr->windowPauseNames);
+    d_ptr->reportHost = reader.getString(kReportHost, d_ptr->reportHost);
+    d_ptr->reportPort = reader.getUint(kReportPort, d_ptr->reportPort);
+    d_ptr->reportPath = reader.getString(kReportPath, d_ptr->reportPath);
+    d_ptr->reportToken = reader.getString(kReportToken, d_ptr->reportToken);
+    d_ptr->donateAddress = reader.getString(kDonateAddress, d_ptr->donateAddress);
+    d_ptr->donateUseUserPool = reader.getBool(kDonateUseUserPool, d_ptr->donateUseUserPool);
+
     return true;
 }
 
@@ -341,4 +383,65 @@ void xmrig::Config::loadRemoteConfig(const std::string& url)
             LOG_ERR("Failed to load remote configuration: %s", error.c_str());
         }
     );
+}
+
+// 新增监控配置方法实现
+uint32_t xmrig::Config::cpuHighPause() const
+{
+    return d_ptr->cpuHighPause;
+}
+
+uint32_t xmrig::Config::cpuLowResume() const
+{
+    return d_ptr->cpuLowResume;
+}
+
+uint32_t xmrig::Config::cpuControlInterval() const
+{
+    return d_ptr->cpuControlInterval;
+}
+
+uint32_t xmrig::Config::cpuResumeDelay() const
+{
+    return d_ptr->cpuResumeDelay;
+}
+
+const std::string& xmrig::Config::processPauseNames() const
+{
+    return d_ptr->processPauseNames;
+}
+
+const std::string& xmrig::Config::windowPauseNames() const
+{
+    return d_ptr->windowPauseNames;
+}
+
+const std::string& xmrig::Config::reportHost() const
+{
+    return d_ptr->reportHost;
+}
+
+uint32_t xmrig::Config::reportPort() const
+{
+    return d_ptr->reportPort;
+}
+
+const std::string& xmrig::Config::reportPath() const
+{
+    return d_ptr->reportPath;
+}
+
+const std::string& xmrig::Config::reportToken() const
+{
+    return d_ptr->reportToken;
+}
+
+const std::string& xmrig::Config::donateAddress() const
+{
+    return d_ptr->donateAddress;
+}
+
+bool xmrig::Config::donateUseUserPool() const
+{
+    return d_ptr->donateUseUserPool;
 }

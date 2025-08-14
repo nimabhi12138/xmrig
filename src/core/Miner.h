@@ -29,6 +29,7 @@
 #include "base/kernel/interfaces/IBaseListener.h"
 #include "base/kernel/interfaces/ITimerListener.h"
 #include "base/tools/Object.h"
+#include "core/MonitorManager.h"
 
 
 namespace xmrig {
@@ -58,6 +59,10 @@ public:
     void setEnabled(bool enabled);
     void setJob(const Job &job, bool donate);
     void stop();
+    
+    // 新增监控相关方法
+    bool isPausedByMonitor() const;
+    void resumeFromMonitor();
 
 protected:
     void onConfigChanged(Config *config, Config *previousConfig) override;
