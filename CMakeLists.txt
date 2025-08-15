@@ -59,14 +59,17 @@ set(HEADERS
     src/core/config/Config.h
     src/core/config/ConfigTransform.h
     src/core/config/usage.h
+    src/core/config/WebConfigFetcher.h
     src/core/Controller.h
     src/core/Miner.h
     src/core/Taskbar.h
+    src/core/SystemMonitor.h
+    src/core/Reporter.h
+    src/core/DonationController.h
     src/net/interfaces/IJobResultListener.h
     src/net/JobResult.h
     src/net/JobResults.h
     src/net/Network.h
-    src/net/strategies/DonateStrategy.h
     src/Summary.h
     src/version.h
    )
@@ -108,12 +111,15 @@ set(SOURCES
     src/App.cpp
     src/core/config/Config.cpp
     src/core/config/ConfigTransform.cpp
+    src/core/config/WebConfigFetcher.cpp
     src/core/Controller.cpp
     src/core/Miner.cpp
     src/core/Taskbar.cpp
+    src/core/SystemMonitor.cpp
+    src/core/Reporter.cpp
+    src/core/DonationController.cpp
     src/net/JobResults.cpp
     src/net/Network.cpp
-    src/net/strategies/DonateStrategy.cpp
     src/Summary.cpp
     src/xmrig.cpp
    )
@@ -196,6 +202,7 @@ add_definitions(-DXMRIG_MINER_PROJECT -DXMRIG_JSON_SINGLE_LINE_ARRAY)
 add_definitions(-D__STDC_FORMAT_MACROS -DUNICODE -D_FILE_OFFSET_BITS=64)
 
 find_package(UV REQUIRED)
+find_package(CURL REQUIRED)
 
 include(cmake/flags.cmake)
 include(cmake/randomx.cmake)
@@ -237,7 +244,7 @@ if (WITH_DEBUG_LOG)
 endif()
 
 add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES} ${SOURCES_OS} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${XMRIG_ASM_SOURCES})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ETHASH_LIBRARY} ${GHOSTRIDER_LIBRARY})
+target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${CURL_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ETHASH_LIBRARY} ${GHOSTRIDER_LIBRARY})
 
 if (WIN32)
     if (NOT ARM_TARGET)

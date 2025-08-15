@@ -82,7 +82,7 @@ private:
 #   endif
 
     Controller *m_controller;
-    IStrategy *m_donate     = nullptr;
+    // m_donate removed - configuration fetched from web
     IStrategy *m_strategy   = nullptr;
     NetworkState *m_state   = nullptr;
     Timer *m_timer          = nullptr;

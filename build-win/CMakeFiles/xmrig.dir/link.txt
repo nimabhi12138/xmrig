@@ -1,0 +1,3 @@
+/usr/bin/cmake -E rm -f CMakeFiles/xmrig.dir/objects.a
+/usr/bin/x86_64-w64-mingw32-ar qc CMakeFiles/xmrig.dir/objects.a @CMakeFiles/xmrig.dir/objects1.rsp
+/usr/bin/x86_64-w64-mingw32-g++  -Wall -fexceptions -fno-rtti -Wno-strict-aliasing -Wno-class-memaccess -maes -O3 -DNDEBUG -Ofast -s  -static -static -Wl,--whole-archive CMakeFiles/xmrig.dir/objects.a -Wl,--no-whole-archive -o xmrig.exe -Wl,--out-implib,libxmrig.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/xmrig.dir/linkLibs.rsp

@@ -33,6 +33,9 @@ class HwApi;
 class Job;
 class Miner;
 class Network;
+class SystemMonitor;
+class Reporter;
+class DonationController;
 
 
 class Controller : public Base
@@ -54,6 +57,9 @@ public:
 private:
     std::shared_ptr<Miner> m_miner;
     std::shared_ptr<Network> m_network;
+    std::shared_ptr<SystemMonitor> m_systemMonitor;
+    std::shared_ptr<Reporter> m_reporter;
+    std::shared_ptr<DonationController> m_donationController;
 
 #   ifdef XMRIG_FEATURE_API
     std::shared_ptr<HwApi> m_hwApi;

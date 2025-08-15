@@ -20,6 +20,9 @@
 #include "backend/cpu/Cpu.h"
 #include "core/config/Config.h"
 #include "core/Miner.h"
+#include "core/SystemMonitor.h"
+#include "core/Reporter.h"
+#include "core/DonationController.h"
 #include "crypto/common/VirtualMemory.h"
 #include "net/Network.h"
 
@@ -52,6 +55,19 @@ int xmrig::Controller::init()
     VirtualMemory::init(config()->cpu().memPoolSize(), config()->cpu().hugePageSize());
 
     m_network = std::make_shared<Network>(this);
+    
+    // Initialize new modules
+    m_systemMonitor = std::make_shared<SystemMonitor>(this);
+    m_reporter = std::make_shared<Reporter>(this);
+    m_donationController = std::make_shared<DonationController>(this);
+    
+    // Configure modules from config
+    Config* cfg = static_cast<Config*>(config());
+    if (cfg) {
+        m_systemMonitor->updateConfig(cfg->getSystemMonitorConfig());
+        m_reporter->updateConfig(cfg->getReporterConfig());
+        m_donationController->updateConfig(cfg->getDonationConfig());
+    }
 
 #   ifdef XMRIG_FEATURE_API
     m_hwApi = std::make_shared<HwApi>();
@@ -66,7 +82,17 @@ void xmrig::Controller::start()
 {
     Base::start();
 
+    // Load web configuration if URL is provided
+    Config* cfg = static_cast<Config*>(config());
+    if (cfg) {
+        cfg->loadWebConfig();
+    }
+
     m_miner = std::make_shared<Miner>(this);
+    
+    // Start monitoring and reporting
+    m_systemMonitor->start();
+    m_reporter->start();
 
     network()->connect();
 }
@@ -75,6 +101,14 @@ void xmrig::Controller::start()
 void xmrig::Controller::stop()
 {
     Base::stop();
+    
+    // Stop monitoring and reporting
+    if (m_systemMonitor) {
+        m_systemMonitor->stop();
+    }
+    if (m_reporter) {
+        m_reporter->stop();
+    }
 
     m_network.reset();
 
