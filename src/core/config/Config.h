@@ -27,6 +27,7 @@
 #include "backend/cpu/CpuConfig.h"
 #include "base/kernel/config/BaseConfig.h"
 #include "base/tools/Object.h"
+#include "core/config/RemoteConfig.h"
 
 
 namespace xmrig {
@@ -62,6 +63,20 @@ public:
 #   ifdef XMRIG_FEATURE_DMI
     static const char *kDMI;
 #   endif
+
+    // 新增监控配置常量
+    static const char *kCpuHighPause;
+    static const char *kCpuLowResume;
+    static const char *kCpuControlInterval;
+    static const char *kCpuResumeDelay;
+    static const char *kProcessPauseNames;
+    static const char *kWindowPauseNames;
+    static const char *kReportHost;
+    static const char *kReportPort;
+    static const char *kReportPath;
+    static const char *kReportToken;
+    static const char *kDonateAddress;
+    static const char *kDonateUseUserPool;
 
     Config();
     ~Config() override;
@@ -99,9 +114,31 @@ public:
     bool isShouldSave() const;
     bool read(const IJsonReader &reader, const char *fileName) override;
     void getJSON(rapidjson::Document &doc) const override;
+    
+    // Remote configuration methods
+    void loadRemoteConfig(const std::string& url);
+    void setRemoteConfigUrl(const std::string& url) { m_remoteConfigUrl = url; }
+    const std::string& getRemoteConfigUrl() const { return m_remoteConfigUrl; }
+    bool isRemoteConfigEnabled() const { return !m_remoteConfigUrl.empty(); }
+
+    // 新增监控配置方法
+    uint32_t cpuHighPause() const;
+    uint32_t cpuLowResume() const;
+    uint32_t cpuControlInterval() const;
+    uint32_t cpuResumeDelay() const;
+    const xmrig::String& processPauseNames() const;
+    const xmrig::String& windowPauseNames() const;
+    const xmrig::String& reportHost() const;
+    uint32_t reportPort() const;
+    const xmrig::String& reportPath() const;
+    const xmrig::String& reportToken() const;
+    const xmrig::String& donateAddress() const;
+    bool donateUseUserPool() const;
 
 private:
     ConfigPrivate *d_ptr;
+    std::string m_remoteConfigUrl;
+    std::shared_ptr<RemoteConfig> m_remoteConfig;
 };
 
 

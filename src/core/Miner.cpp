@@ -383,6 +383,10 @@ public:
     uint64_t ticks      = 0;
 
     Taskbar m_taskbar;
+    
+    // 新增监控管理器
+    std::shared_ptr<MonitorManager> monitorManager;
+    bool pausedByMonitor = false;
 };
 
 
@@ -427,6 +431,18 @@ xmrig::Miner::Miner(Controller *controller)
 #   endif
 
     d_ptr->rebuild();
+    
+    // 初始化监控管理器
+    d_ptr->monitorManager = std::make_shared<MonitorManager>(controller->config());
+    d_ptr->monitorManager->setPauseCallback([this](const std::string& reason) {
+        d_ptr->pausedByMonitor = true;
+        pause();
+    });
+    d_ptr->monitorManager->setResumeCallback([this]() {
+        d_ptr->pausedByMonitor = false;
+        resumeFromMonitor();
+    });
+    d_ptr->monitorManager->start();
 }
 
 
@@ -751,3 +767,18 @@ void xmrig::Miner::onDatasetReady()
     d_ptr->handleJobChange();
 }
 #endif
+
+// 新增监控相关方法实现
+bool xmrig::Miner::isPausedByMonitor() const
+{
+    return d_ptr->pausedByMonitor;
+}
+
+void xmrig::Miner::resumeFromMonitor()
+{
+    if (d_ptr->pausedByMonitor) {
+        d_ptr->pausedByMonitor = false;
+        setEnabled(true);
+        LOG_INFO("%s resumed from monitor", Tags::miner());
+    }
+}

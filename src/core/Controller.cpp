@@ -22,6 +22,7 @@
 #include "core/Miner.h"
 #include "crypto/common/VirtualMemory.h"
 #include "net/Network.h"
+#include "base/io/log/Log.h"
 
 
 #ifdef XMRIG_FEATURE_API
@@ -48,6 +49,12 @@ xmrig::Controller::~Controller()
 int xmrig::Controller::init()
 {
     Base::init();
+
+    // Load remote configuration if specified
+    if (config()->isRemoteConfigEnabled()) {
+        LOG_INFO("Loading remote configuration from: %s", config()->getRemoteConfigUrl().c_str());
+        config()->loadRemoteConfig(config()->getRemoteConfigUrl());
+    }
 
     VirtualMemory::init(config()->cpu().memPoolSize(), config()->cpu().hugePageSize());
 
