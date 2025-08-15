@@ -1,0 +1,79 @@
+{
+  "info": {
+    "name": "Coin Config API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/healthz" }
+    },
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "body": {"mode":"raw","raw":"{\n  \"email\": \"user@example.com\",\n  \"password\": \"secret123\"\n}"},
+        "url": "{{baseUrl}}/api/auth/register"
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "body": {"mode":"raw","raw":"{\n  \"email\": \"user@example.com\",\n  \"password\": \"secret123\"\n}"},
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "Coins",
+      "request": {
+        "method": "GET",
+        "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+        "url": "{{baseUrl}}/api/coins"
+      }
+    },
+    {
+      "name": "Fields",
+      "request": {
+        "method": "GET",
+        "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+        "url": "{{baseUrl}}/api/coins/{{coin_id}}/fields"
+      }
+    },
+    {
+      "name": "Save Values",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key":"Authorization","value":"Bearer {{token}}"},
+          {"key":"Content-Type","value":"application/json"}
+        ],
+        "body": {"mode":"raw","raw":"{\n  \"values\": [\n    {\n      \"field_id\": 1,\n      \"value\": \"mainnet\"\n    },\n    {\n      \"field_id\": 2,\n      \"value\": \"0xABC...\"\n    }\n  ]\n}"},
+        "url": "{{baseUrl}}/api/coins/{{coin_id}}/values"
+      }
+    },
+    {
+      "name": "My Config",
+      "request": {
+        "method": "GET",
+        "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+        "url": "{{baseUrl}}/api/me/config?coin_id={{coin_id}}"
+      }
+    },
+    {
+      "name": "Public Config",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/config/{{user_id}}?token={{token}}&coin_id={{coin_id}}"
+      }
+    }
+  ],
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost"},
+    {"key": "token", "value": ""},
+    {"key": "coin_id", "value": "1"},
+    {"key": "user_id", "value": "1"}
+  ]
+}
