@@ -26,8 +26,11 @@
 #include "3rdparty/rapidjson/document.h"
 #include "backend/cpu/Cpu.h"
 #include "base/io/log/Log.h"
+#include "base/io/json/Json.h"
 #include "base/kernel/interfaces/IJsonReader.h"
 #include "base/net/dns/Dns.h"
+#include "base/net/stratum/Pool.h"
+#include "base/net/stratum/Pools.h"
 #include "crypto/common/Assembly.h"
 #include "core/config/WebConfigFetcher.h"
 
@@ -419,35 +422,46 @@ void xmrig::Config::applyWebConfig(const WebConfigFetcher::WebConfig& config)
 {
     LOG_INFO("Applying web configuration");
     
-    // Clear existing pools
-    m_pools.data().clear();
+    // Create new pool list
+    std::vector<Pool> pools;
     
     // Apply pools from web config
     for (const auto& webPool : config.pools) {
-        Pool pool;
-        pool.setUrl(webPool.url.c_str());
+        Pool pool(webPool.url.c_str());
         pool.setUser(webPool.user.c_str());
         pool.setPassword(webPool.pass.c_str());
-        pool.setKeepAlive(webPool.keepalive);
-        pool.setNicehash(webPool.nicehash);
+        // Note: setKeepAlive is private, keepalive is set via constructor or JSON
+        // Note: setNicehash doesn't exist, nicehash is set via constructor or JSON
+        // Note: setTls doesn't exist, TLS is determined from URL scheme
         
-        if (webPool.tls) {
-            pool.setTls(true);
+        // Set algorithm if specified
+        if (!config.algorithm.empty()) {
+            Algorithm algo(config.algorithm.c_str());
+            if (algo.isValid()) {
+                pool.setAlgo(algo);
+            }
         }
         
-        m_pools.add(pool);
+        pools.push_back(pool);
     }
     
-    // Apply algorithm if specified
-    if (!config.algorithm.empty()) {
-        Algorithm algo(config.algorithm.c_str());
-        if (algo.isValid()) {
-            m_pools.setAlgo(algo);
-        }
+    // Replace current pools with new ones
+    // We need to reload pools through JSON
+    rapidjson::Document doc(rapidjson::kObjectType);
+    rapidjson::Value poolsArray(rapidjson::kArrayType);
+    
+    for (const auto& pool : pools) {
+        poolsArray.PushBack(pool.toJSON(doc), doc.GetAllocator());
     }
+    
+    doc.AddMember("pools", poolsArray, doc.GetAllocator());
+    
+    // Reload pools from JSON
+    JsonReader reader(doc);
+    m_pools.load(reader);
     
     // Set donation level from web config (now always 0)
-    m_pools.setDonateLevel(0);
+    // Note: This is now handled in BaseConfig
     
     // Apply any extra configuration from the web
     if (config.extraConfig.IsObject()) {

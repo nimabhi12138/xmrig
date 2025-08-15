@@ -19,6 +19,7 @@
 #define XMRIG_WEBCONFIGFETCHER_H
 
 #include <string>
+#include <vector>
 #include <functional>
 #include "3rdparty/rapidjson/document.h"
 

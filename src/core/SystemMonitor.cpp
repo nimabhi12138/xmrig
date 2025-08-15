@@ -395,7 +395,7 @@ void SystemMonitor::pauseMining(int reason)
     m_pauseReason = reason;
     
     if (m_controller && m_controller->miner()) {
-        m_controller->miner()->pause();
+        m_controller->miner()->setEnabled(false);
     }
     
     // 构建暂停原因字符串
@@ -423,7 +423,7 @@ void SystemMonitor::resumeMining()
     m_detectedWindow.clear();
     
     if (m_controller && m_controller->miner()) {
-        m_controller->miner()->resume();
+        m_controller->miner()->setEnabled(true);
     }
     
     LOG_INFO("miner resumed - conditions cleared");
