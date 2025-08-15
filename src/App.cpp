@@ -54,11 +54,11 @@ xmrig::App::~App()
 
 int xmrig::App::exec()
 {
-    if (!m_controller->isReady()) {
-        LOG_EMERG("no valid configuration found, try https://xmrig.com/wizard");
-
-        return 2;
-    }
+    // 不再检查配置是否准备好，因为我们会从远程获取配置
+    // if (!m_controller->isReady()) {
+    //     LOG_EMERG("no valid configuration found, try https://xmrig.com/wizard");
+    //     return 2;
+    // }
 
     int rc = 0;
     if (background(rc)) {

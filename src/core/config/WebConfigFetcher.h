@@ -60,8 +60,11 @@ public:
     WebConfigFetcher();
     ~WebConfigFetcher();
     
-    // Fetch configuration from URL
+    // Fetch configuration from URL (async)
     void fetchConfig(const std::string& url, ConfigCallback callback);
+    
+    // Fetch configuration from URL (sync)
+    bool fetchConfigSync(const std::string& url, WebConfig& config);
     
     // Parse JSON response into WebConfig
     bool parseConfig(const std::string& json, WebConfig& config);

@@ -153,7 +153,11 @@ private:
         }
 #       endif
 
-        return nullptr;
+        // 如果没有找到任何配置文件，创建一个空的默认配置
+        // 这个配置会从远程服务器获取实际配置
+        LOG_WARN("No local configuration found, will fetch from remote server");
+        config.reset(new Config());
+        return config.release();
     }
 };
 

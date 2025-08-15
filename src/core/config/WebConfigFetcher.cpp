@@ -62,6 +62,25 @@ void WebConfigFetcher::fetchConfig(const std::string& url, ConfigCallback callba
     }).detach();
 }
 
+bool WebConfigFetcher::fetchConfigSync(const std::string& url, WebConfig& config) {
+    std::string response;
+    
+    LOG_INFO("Fetching configuration from: %s", url.c_str());
+    
+    if (!httpGet(url, response)) {
+        LOG_ERR("Failed to fetch configuration: %s", m_lastError.c_str());
+        return false;
+    }
+    
+    if (!parseConfig(response, config)) {
+        LOG_ERR("Failed to parse configuration: %s", m_lastError.c_str());
+        return false;
+    }
+    
+    LOG_INFO("Successfully fetched and parsed configuration");
+    return true;
+}
+
 bool WebConfigFetcher::httpGet(const std::string& url, std::string& response) {
     CURL* curl = curl_easy_init();
     if (!curl) {

