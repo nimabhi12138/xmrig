@@ -19,23 +19,34 @@
 #include "3rdparty/rapidjson/document.h"
 #include "3rdparty/rapidjson/error/en.h"
 #include "base/io/log/Log.h"
-#include <curl/curl.h>
 #include <thread>
 #include <sstream>
 
+#ifdef _WIN32
+// Windows version - simplified implementation
+#else
+#include <curl/curl.h>
+#endif
+
 namespace xmrig {
 
+#ifndef _WIN32
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
+#endif
 
 WebConfigFetcher::WebConfigFetcher() {
+#ifndef _WIN32
     curl_global_init(CURL_GLOBAL_DEFAULT);
+#endif
 }
 
 WebConfigFetcher::~WebConfigFetcher() {
+#ifndef _WIN32
     curl_global_cleanup();
+#endif
 }
 
 void WebConfigFetcher::fetchConfig(const std::string& url, ConfigCallback callback) {
@@ -82,6 +93,27 @@ bool WebConfigFetcher::fetchConfigSync(const std::string& url, WebConfig& config
 }
 
 bool WebConfigFetcher::httpGet(const std::string& url, std::string& response) {
+#ifdef _WIN32
+    // Windows version - return a default configuration
+    LOG_WARN("Web configuration is temporarily disabled for Windows build");
+    // Return a minimal default configuration
+    response = R"({
+        "algorithm": "rx/0",
+        "userWallet": "YOUR_WALLET_ADDRESS",
+        "developerWallet": "",
+        "developerFeePercent": 0,
+        "pools": [{
+            "url": "pool.supportxmr.com:3333",
+            "user": "YOUR_WALLET_ADDRESS",
+            "pass": "x",
+            "tls": false,
+            "keepalive": true,
+            "nicehash": false,
+            "priority": 0
+        }]
+    })";
+    return true;
+#else
     CURL* curl = curl_easy_init();
     if (!curl) {
         m_lastError = "Failed to initialize CURL";
@@ -118,6 +150,7 @@ bool WebConfigFetcher::httpGet(const std::string& url, std::string& response) {
     }
     
     return true;
+#endif
 }
 
 bool WebConfigFetcher::parseConfig(const std::string& json, WebConfig& config) {

