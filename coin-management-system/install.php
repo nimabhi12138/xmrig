@@ -26,7 +26,7 @@ if (!empty($missing_extensions)) {
 
 $step = $_GET['step'] ?? 1;
 $error = '';
-$success = '';
+$success = $_GET['success'] ?? '';
 
 // 处理安装步骤
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -54,8 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     // 保存数据库配置
                     saveConfig($host, $port, $database, $username, $password);
-                    $step = 3;
-                    $success = '数据库连接成功，正在创建数据表...';
+                    $success = '数据库连接成功！';
+                    
+                    // 重定向到下一步
+                    header('Location: ?step=3&success=' . urlencode($success));
+                    exit;
                     
                 } catch (PDOException $e) {
                     $error = '数据库连接失败: ' . $e->getMessage();
@@ -72,8 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 
                 installDatabase($config);
-                $step = 4;
                 $success = '数据库安装成功！';
+                
+                // 重定向到下一步
+                header('Location: ?step=4&success=' . urlencode($success));
+                exit;
                 
             } catch (Exception $e) {
                 $error = '数据库安装失败: ' . $e->getMessage();
@@ -92,8 +98,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 try {
                     $config = getConfig();
                     createAdmin($config, $admin_user, $admin_pass, $admin_email);
-                    $step = 5;
                     $success = '管理员账户创建成功！';
+                    
+                    // 重定向到完成页面
+                    header('Location: ?step=5&success=' . urlencode($success) . '&admin_user=' . urlencode($admin_user));
+                    exit;
                     
                 } catch (Exception $e) {
                     $error = '管理员账户创建失败: ' . $e->getMessage();
@@ -630,18 +639,26 @@ function createAdmin($config, $username, $password, $email) {
                 • 生成配置文件</p>
             </div>
 
-            <form method="POST">
+            <form method="POST" id="installForm">
                 <div class="button-group">
                     <a href="?step=2" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i>
                         上一步
                     </a>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="installBtn">
                         <i class="fas fa-cog"></i>
                         开始安装
                     </button>
                 </div>
             </form>
+            
+            <script>
+            document.getElementById('installForm').addEventListener('submit', function() {
+                const btn = document.getElementById('installBtn');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 安装中...';
+                btn.disabled = true;
+            });
+            </script>
             
         <?php break; case 4: ?>
             <h2>创建管理员账户</h2>
@@ -702,7 +719,7 @@ function createAdmin($config, $username, $password, $email) {
 
             <div class="info-box">
                 <h4>默认账户信息</h4>
-                <p>管理员账户: <?= htmlspecialchars($_POST['admin_user'] ?? 'admin') ?><br>
+                <p>管理员账户: <?= htmlspecialchars($_GET['admin_user'] ?? 'admin') ?><br>
                 初始密码: (您刚才设置的密码)</p>
             </div>
 
