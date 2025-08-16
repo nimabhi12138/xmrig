@@ -1,0 +1,421 @@
+{
+  "test_time": "2025-08-16 04:06:05",
+  "summary": {
+    "total_tests": 52,
+    "passed": 46,
+    "failed": 6,
+    "pass_rate": "88.5%"
+  },
+  "module_stats": {
+    "安装向导": {
+      "passed": 3,
+      "failed": 0
+    },
+    "管理后台": {
+      "passed": 1,
+      "failed": 0
+    },
+    "币种管理": {
+      "passed": 1,
+      "failed": 3
+    },
+    "字段管理": {
+      "passed": 5,
+      "failed": 0
+    },
+    "用户注册": {
+      "passed": 3,
+      "failed": 2
+    },
+    "用户仪表板": {
+      "passed": 7,
+      "failed": 0
+    },
+    "API": {
+      "passed": 6,
+      "failed": 0
+    },
+    "数据库": {
+      "passed": 6,
+      "failed": 0
+    },
+    "安全": {
+      "passed": 4,
+      "failed": 0
+    },
+    "UI设计": {
+      "passed": 6,
+      "failed": 0
+    },
+    "数据流": {
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "detailed_log": [
+    {
+      "time": "04:06:05",
+      "module": "安装向导",
+      "function": "三步安装流程",
+      "status": "PASS",
+      "details": "包含环境检查、数据库配置、完成安装"
+    },
+    {
+      "time": "04:06:05",
+      "module": "安装向导",
+      "function": "环境检查",
+      "status": "PASS",
+      "details": "包含PHP版本和扩展检查"
+    },
+    {
+      "time": "04:06:05",
+      "module": "安装向导",
+      "function": "数据库配置",
+      "status": "PASS",
+      "details": "包含所有数据库配置项"
+    },
+    {
+      "time": "04:06:05",
+      "module": "管理后台",
+      "function": "管理员登录验证",
+      "status": "PASS",
+      "details": "包含密码验证和权限检查"
+    },
+    {
+      "time": "04:06:05",
+      "module": "币种管理",
+      "function": "添加币种",
+      "status": "FAIL",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "币种管理",
+      "function": "编辑币种",
+      "status": "FAIL",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "币种管理",
+      "function": "删除币种",
+      "status": "FAIL",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "币种管理",
+      "function": "模板参数管理",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "字段管理",
+      "function": "支持text类型",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "字段管理",
+      "function": "支持textarea类型",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "字段管理",
+      "function": "支持select类型",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "字段管理",
+      "function": "支持number类型",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "字段管理",
+      "function": "必填字段设置",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户注册",
+      "function": "密码加密",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户注册",
+      "function": "邮箱验证",
+      "status": "FAIL",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户注册",
+      "function": "API令牌生成",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户注册",
+      "function": "密码确认",
+      "status": "FAIL",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户注册",
+      "function": "密码强度检测",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户仪表板",
+      "function": "保存配置",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户仪表板",
+      "function": "删除配置",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户仪表板",
+      "function": "动态加载字段",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户仪表板",
+      "function": "查看配置",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户仪表板",
+      "function": "复制API链接",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户仪表板",
+      "function": "选项卡界面",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "用户仪表板",
+      "function": "统计信息",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "API",
+      "function": "参数验证",
+      "status": "PASS",
+      "details": "包含user_id和token验证"
+    },
+    {
+      "time": "04:06:05",
+      "module": "API",
+      "function": "Bearer Token支持",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "API",
+      "function": "HTTP 400错误处理",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "API",
+      "function": "HTTP 401错误处理",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "API",
+      "function": "HTTP 404错误处理",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "API",
+      "function": "格式化JSON输出",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据库",
+      "function": "单例模式实现",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据库",
+      "function": "insert方法",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据库",
+      "function": "update方法",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据库",
+      "function": "delete方法",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据库",
+      "function": "query方法",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据库",
+      "function": "PDO预处理语句",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "安全",
+      "function": "admin/currencies.php XSS防护",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "安全",
+      "function": "admin/fields.php XSS防护",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "安全",
+      "function": "user/dashboard.php XSS防护",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "安全",
+      "function": "会话管理",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "UI设计",
+      "function": "index.php 响应式布局",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "UI设计",
+      "function": "index.php 动画效果",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "UI设计",
+      "function": "admin/index.php 响应式布局",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "UI设计",
+      "function": "admin/index.php 动画效果",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "UI设计",
+      "function": "user/dashboard.php 响应式布局",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "UI设计",
+      "function": "user/dashboard.php 动画效果",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据流",
+      "function": "获取模板",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据流",
+      "function": "收集字段值",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据流",
+      "function": "替换占位符",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据流",
+      "function": "处理配置",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "time": "04:06:05",
+      "module": "数据流",
+      "function": "保存配置",
+      "status": "FAIL",
+      "details": ""
+    }
+  ]
+}
