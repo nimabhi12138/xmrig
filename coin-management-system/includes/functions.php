@@ -1,6 +1,9 @@
 <?php
 // 核心功能函数库
 
+// 加载数据库配置和类
+require_once __DIR__ . '/../config/database.php';
+
 // 自动加载类
 spl_autoload_register(function($class) {
     $file = __DIR__ . '/' . str_replace('\\', '/', $class) . '.php';
