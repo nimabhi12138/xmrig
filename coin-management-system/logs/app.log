@@ -1,0 +1,2 @@
+[2025-08-16 04:01:16] [ERROR] PHP Error: http_response_code(): Cannot set response code - headers already sent (output started at /workspace/coin-management-system/simple_test.php:2) in /workspace/coin-management-system/includes/functions.php on line 59
+[2025-08-16 04:01:16] [ERROR] PHP Error: Cannot modify header information - headers already sent by (output started at /workspace/coin-management-system/simple_test.php:2) in /workspace/coin-management-system/includes/functions.php on line 60

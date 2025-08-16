@@ -203,15 +203,25 @@ class TemplateEngine {
     public static function replacePlaceholders($template, $values) {
         if (empty($template)) return '';
         
-        // 解析模板（如果是JSON字符串）
-        $templateData = is_string($template) ? json_decode($template, true) : $template;
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('模板格式无效');
+        // 如果是字符串模板，直接进行占位符替换
+        if (is_string($template)) {
+            // 尝试解析为JSON
+            $decoded = json_decode($template, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                // 是有效的JSON，递归替换
+                $result = self::replaceRecursive($decoded, $values);
+                return json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            } else {
+                // 纯字符串模板，直接替换占位符
+                return preg_replace_callback('/\{\{(\w+)\}\}/', function($matches) use ($values) {
+                    $key = $matches[1];
+                    return isset($values[$key]) ? $values[$key] : $matches[0];
+                }, $template);
+            }
         }
         
-        // 递归替换占位符
-        $result = self::replaceRecursive($templateData, $values);
-        
+        // 如果是数组，递归替换
+        $result = self::replaceRecursive($template, $values);
         return json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
     
