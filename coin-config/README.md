@@ -93,3 +93,22 @@ If OS package manager is unavailable, you can run via Docker or your panel envir
 - Admin can set user role and default coin:
   - PUT `/api/admin/users/{user_id}/role` `{ role: "admin"|"user" }`
   - PUT `/api/admin/users/{user_id}/default-coin` `{ default_coin_id: 1 }`
+
+## 一次性部署步骤（Docker 推荐）
+
+1. 解压后进入目录，执行：
+   - `docker compose up -d --build`
+2. 等待初始化（自动 composer install / key generate / migrate / seed）。
+3. 管理员种子 Token（默认，可通过环境变量 ADMIN_SEED_TOKEN 覆盖）：
+   - 文件位置：`storage/logs/seeded_admin_token.txt`
+4. 验证：
+   - 健康检查：GET `http://localhost:8080/api/healthz`
+   - 币种列表（需 Token）：GET `http://localhost:8080/api/coins`
+   - 公共配置：GET `http://localhost:8080/api/config/{user_id}?token={token}&coin_id={coin_id}`
+
+若使用面板（宝塔/小皮）：
+- 站点根指向 `public/`
+- `.env` 配置数据库后：
+  - `php artisan key:generate`
+  - `php artisan migrate --force`
+  - `php artisan db:seed --force`（生成管理员 Token 文件）

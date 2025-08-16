@@ -13,6 +13,7 @@ services:
       DB_DATABASE: coin_config
       DB_USERNAME: root
       DB_PASSWORD: secret
+      ADMIN_SEED_TOKEN: public_admin_token_123456
     depends_on:
       - db
     volumes:
