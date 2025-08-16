@@ -33,14 +33,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($step) {
         case 2:
             // 数据库连接测试
-            $host = $_POST['host'] ?? 'localhost';
-            $port = $_POST['port'] ?? '3306';
-            $database = $_POST['database'] ?? '';
-            $username = $_POST['username'] ?? '';
-            $password = $_POST['password'] ?? '';
+            $host = trim($_POST['host'] ?? 'localhost');
+            $port = trim($_POST['port'] ?? '3306');
+            $database = trim($_POST['database'] ?? '');
+            $username = trim($_POST['username'] ?? '');
+            $password = $_POST['password'] ?? ''; // 密码可能包含空格，不trim
             
-            if (empty($database) || empty($username)) {
-                $error = '请填写完整的数据库信息';
+            // 增强验证
+            if (empty($database)) {
+                $error = '数据库名不能为空！';
+            } elseif (empty($username)) {
+                $error = '数据库用户名不能为空！';
+            } elseif (empty($host)) {
+                $error = '数据库主机不能为空！';
             } else {
                 try {
                     $dsn = "mysql:host={$host};port={$port};charset=utf8mb4";
@@ -61,7 +66,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                     
                 } catch (PDOException $e) {
-                    $error = '数据库连接失败: ' . $e->getMessage();
+                    $error_code = $e->getCode();
+                    $error_msg = $e->getMessage();
+                    
+                    // 提供更友好的错误信息
+                    if (strpos($error_msg, 'Access denied') !== false) {
+                        $error = "数据库连接失败：用户名或密码错误！<br>
+                        请检查：<br>
+                        • 用户名：'{$username}' 是否正确<br>
+                        • 密码是否正确<br>
+                        • 该用户是否有数据库权限<br>
+                        原始错误：{$error_msg}";
+                    } elseif (strpos($error_msg, 'Unknown database') !== false) {
+                        $error = "数据库 '{$database}' 不存在，系统将尝试创建。<br>原始错误：{$error_msg}";
+                    } elseif (strpos($error_msg, "Can't connect") !== false) {
+                        $error = "无法连接到数据库服务器！<br>
+                        请检查：<br>
+                        • 数据库服务是否启动<br>
+                        • 主机地址：'{$host}' 是否正确<br>
+                        • 端口：{$port} 是否正确<br>
+                        原始错误：{$error_msg}";
+                    } else {
+                        $error = "数据库连接失败：{$error_msg}";
+                    }
                 }
             }
             break;
