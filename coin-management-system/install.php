@@ -151,12 +151,23 @@ function installDatabase($config) {
     // 读取SQL文件
     $sql = file_get_contents(__DIR__ . '/database/schema.sql');
     
+    // 移除CREATE DATABASE和USE语句，因为我们已经连接到指定数据库
+    $sql = preg_replace('/CREATE DATABASE.*?;/i', '', $sql);
+    $sql = preg_replace('/USE\s+.*?;/i', '', $sql);
+    
     // 执行SQL语句
     $statements = explode(';', $sql);
     foreach ($statements as $statement) {
         $statement = trim($statement);
-        if (!empty($statement)) {
-            $pdo->exec($statement);
+        if (!empty($statement) && !preg_match('/^\s*--/', $statement)) {
+            try {
+                $pdo->exec($statement);
+            } catch (PDOException $e) {
+                // 忽略表已存在的错误
+                if (strpos($e->getMessage(), 'already exists') === false) {
+                    throw $e;
+                }
+            }
         }
     }
     
@@ -243,6 +254,12 @@ class Database {
 ?>";
     
     file_put_contents(__DIR__ . '/config/database.php', $new_config);
+    
+    // 清理临时配置文件
+    $temp_config = __DIR__ . '/config/install_config.php';
+    if (file_exists($temp_config)) {
+        unlink($temp_config);
+    }
 }
 
 function createAdmin($config, $username, $password, $email) {
