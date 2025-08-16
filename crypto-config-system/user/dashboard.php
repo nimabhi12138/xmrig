@@ -58,13 +58,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
                 $message = '<div class="alert alert-success">配置已更新</div>';
             } else {
                 // 创建新配置
-                $db->insert('user_configs', [
-                    'user_id' => $user_id,
-                    'currency_id' => $currency_id,
-                    'field_values' => json_encode($field_values),
-                    'processed_config' => $processed_config
-                ]);
-                $message = '<div class="alert alert-success">配置已保存</div>';
+                try {
+                    $db->insert('user_configs', [
+                        'user_id' => $user_id,
+                        'currency_id' => $currency_id,
+                        'field_values' => json_encode($field_values),
+                        'processed_config' => $processed_config
+                    ]);
+                    $message = '<div class="alert alert-success">配置已保存</div>';
+                } catch (Exception $e) {
+                    $message = '<div class="alert alert-danger">保存失败：' . htmlspecialchars($e->getMessage()) . '</div>';
+                }
             }
         }
     } elseif ($_POST['action'] == 'delete_config') {

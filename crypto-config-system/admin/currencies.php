@@ -352,7 +352,7 @@ $currencies = $db->query("SELECT * FROM currencies ORDER BY id DESC")->fetchAll(
                     <h5 class="modal-title">添加币种</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form method="POST">
+                <form method="POST" action="">
                     <div class="modal-body">
                         <input type="hidden" name="action" value="add">
                         <div class="mb-3">
@@ -397,7 +397,7 @@ $currencies = $db->query("SELECT * FROM currencies ORDER BY id DESC")->fetchAll(
                     <h5 class="modal-title">编辑币种</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form method="POST">
+                <form method="POST" action="">
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="id" id="edit_id">
